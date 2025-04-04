@@ -10,6 +10,10 @@ from app.models.container import Container
 from app.services.placement import PlacementService
 from app.models.items import Dimensions, Position, Item
 
+
+from pymongo import UpdateOne  # Required import
+
+
 placement_service = PlacementService()
 router = APIRouter()
 
@@ -233,23 +237,38 @@ async def place_items_endpoint(items: List[ItemData]):
     if not placed_items:
         raise HTTPException(status_code=400, detail="No items could be placed.")
 
-    # Insert to DB
-    for placed_item in placed_items:
-        try:
-            await db.items.update_one({"item_id": placed_item["item_id"]},
-                {"$set": {
-                    "container_id": placed_item["container_id"],
-                    "position": placed_item["position"]
-                }}
-            )
-            
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Database update failed: {str(e)}")
+    # Prepare bulk operations using UpdateOne
+    bulk_item_operations = [
+        UpdateOne(
+            {"item_id": placed_item["item_id"]},
+            {"$set": {
+                "container_id": placed_item["container_id"],
+                "position": placed_item["position"]
+            }}
+        )
+        for placed_item in placed_items
+    ]
 
-    for container in containers:
-        await db.containers.update_one(
+    bulk_container_operations = [
+        UpdateOne(
             {"container_id": container.container_id},
             {"$set": {"occupied_volume": container.occupied_volume}}
         )
+        for container in containers
+    ]
 
-    return {"message": f"Placed {len(placed_items)} items."}
+    # Execute bulk writes with Motor's async bulk_write
+    try:
+        if bulk_item_operations:
+            await db.items.bulk_write(bulk_item_operations, ordered=False)
+        
+        if bulk_container_operations:
+            await db.containers.bulk_write(bulk_container_operations, ordered=False)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Bulk update failed: {str(e)}"
+        )
+
+    return {"success":True,"placements":placed_items}
