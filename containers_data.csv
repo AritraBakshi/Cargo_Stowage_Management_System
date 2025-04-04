@@ -1,0 +1,101 @@
+Zone,Container ID,Width(cm),Depth(cm),Height(cm)
+Medical Bay,contA,200,85,200
+Airlock,contB,100,85,200
+Airlock,contC,150,85,200
+Medical Bay,contD,100,85,200
+Laboratory,contE,150,85,200
+Laboratory,contF,150,85,200
+Crew Quarters,contG,200,85,200
+Engineering,contH,100,85,200
+Cargo Hold,contI,100,85,200
+Crew Quarters,contJ,150,85,200
+Medical Bay,contK,50,85,200
+Cargo Hold,contL,150,85,200
+Airlock,contM,150,85,200
+Laboratory,contN,150,85,200
+Medical Bay,contO,150,85,200
+Laboratory,contP,200,85,200
+Cargo Hold,contQ,200,85,200
+Medical Bay,contR,150,85,200
+Engineering,contS,50,85,200
+Crew Quarters,contT,50,85,200
+Laboratory,contU,150,85,200
+Engineering,contV,150,85,200
+Engineering,contW,100,85,200
+Laboratory,contX,200,85,200
+Medical Bay,contY,50,85,200
+Medical Bay,contZ,150,85,200
+Crew Quarters,cont[,150,85,200
+Crew Quarters,cont\,200,85,200
+Medical Bay,cont],50,85,200
+Cargo Hold,cont^,100,85,200
+Laboratory,cont_,200,85,200
+Airlock,cont`,150,85,200
+Cargo Hold,conta,100,85,200
+Engineering,contb,200,85,200
+Crew Quarters,contc,100,85,200
+Medical Bay,contd,200,85,200
+Crew Quarters,conte,100,85,200
+Airlock,contf,100,85,200
+Medical Bay,contg,150,85,200
+Engineering,conth,50,85,200
+Engineering,conti,100,85,200
+Laboratory,contj,200,85,200
+Airlock,contk,200,85,200
+Airlock,contl,100,85,200
+Laboratory,contm,50,85,200
+Engineering,contn,200,85,200
+Medical Bay,conto,200,85,200
+Airlock,contp,200,85,200
+Cargo Hold,contq,200,85,200
+Crew Quarters,contr,50,85,200
+Engineering,conts,150,85,200
+Airlock,contt,100,85,200
+Cargo Hold,contu,200,85,200
+Laboratory,contv,50,85,200
+Laboratory,contw,200,85,200
+Cargo Hold,contx,100,85,200
+Crew Quarters,conty,200,85,200
+Crew Quarters,contz,100,85,200
+Airlock,cont{,100,85,200
+Medical Bay,cont|,100,85,200
+Medical Bay,cont},50,85,200
+Crew Quarters,cont~,200,85,200
+Airlock,cont,50,85,200
+Engineering,cont,150,85,200
+Cargo Hold,cont,100,85,200
+Engineering,cont,50,85,200
+Medical Bay,cont,100,85,200
+Crew Quarters,cont,50,85,200
+Cargo Hold,cont,50,85,200
+Crew Quarters,cont,150,85,200
+Laboratory,cont,200,85,200
+Medical Bay,cont,100,85,200
+Laboratory,cont,200,85,200
+Cargo Hold,cont,100,85,200
+Medical Bay,cont,150,85,200
+Medical Bay,cont,150,85,200
+Medical Bay,cont,100,85,200
+Airlock,cont,150,85,200
+Crew Quarters,cont,100,85,200
+Cargo Hold,cont,50,85,200
+Crew Quarters,cont,50,85,200
+Cargo Hold,cont,100,85,200
+Laboratory,cont,100,85,200
+Airlock,cont,50,85,200
+Laboratory,cont,50,85,200
+Medical Bay,cont,100,85,200
+Engineering,cont,150,85,200
+Engineering,cont,200,85,200
+Cargo Hold,cont,200,85,200
+Cargo Hold,cont,150,85,200
+Laboratory,cont,150,85,200
+Medical Bay,cont,200,85,200
+Airlock,cont,150,85,200
+Cargo Hold,cont,100,85,200
+Laboratory,cont,150,85,200
+Medical Bay,cont ,200,85,200
+Medical Bay,cont¡,100,85,200
+Airlock,cont¢,50,85,200
+Airlock,cont£,200,85,200
+Engineering,cont¤,100,85,200
