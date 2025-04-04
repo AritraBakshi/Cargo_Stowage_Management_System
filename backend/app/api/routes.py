@@ -28,11 +28,11 @@ async def add_items(file: UploadFile = File(...)):
             usage_limit_str = row["Usage Limit"]
             usage_limit_str = str(usage_limit_str).strip()
             match = re.search(r'\d+', usage_limit_str)
-            print("this is match", match)
+            # print("this is match", match)
             if not match:
                 raise ValueError(f"Invalid Usage Limit format: {usage_limit_str}")
             usage_limit = int(match.group())
-            print("this is usage limit", usage_limit)
+            # print("this is usage limit", usage_limit)
             # Parse expiry_date
             expiry_date_str = row.get("Expiry Date (ISO Format)")
             expiry_date = None
@@ -155,7 +155,7 @@ async def get_containers():
 @router.get("/items")
 async def get_items():
     items_raw = await db.items.find().to_list(length=1000)
-    print("this is items raw", items_raw)
+    # print("this is items raw", items_raw)
     items: List[Item] = [
         Item(
             item_id=i["item_id"],
@@ -225,19 +225,30 @@ async def place_items_endpoint(items: List[ItemData]):
 
         try:
             item = placement_service.place_item(item, containers)
-            placed_items.append(item.dict())
+            placed_items.append(item.model_dump())
         except ValueError as e:
             continue
-
+        
+    print("this is placed items", placed_items)
     if not placed_items:
         raise HTTPException(status_code=400, detail="No items could be placed.")
 
     # Insert to DB
-    await db.items.insert_many(placed_items)
+    for placed_item in placed_items:
+        try:
+            await db.items.update_one({"item_id": placed_item["item_id"]},
+                {"$set": {
+                    "container_id": placed_item["container_id"],
+                    "position": placed_item["position"]
+                }}
+            )
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Database update failed: {str(e)}")
 
     for container in containers:
         await db.containers.update_one(
-            {"_id": container.container_id},
+            {"container_id": container.container_id},
             {"$set": {"occupied_volume": container.occupied_volume}}
         )
 
