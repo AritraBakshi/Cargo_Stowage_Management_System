@@ -8,7 +8,7 @@ zones = ["Crew Quarters", "Airlock", "Medical Bay", "Cargo Hold", "Engineering",
 names = ["Food Packet", "Oxygen Cylinder", "First Aid Kit", "Water Container", "Tool Kit", "Medical Supplies", "Battery Pack"]
 usage_limits = ["5 uses", "10 uses", "30 uses", "50 uses", "100 uses"]
 
-for i in range(1, 101):
+for i in range(1, 969):
     item_id = f"{i:03}"
     name = random.choice(names)
     width = random.randint(5, 50)
