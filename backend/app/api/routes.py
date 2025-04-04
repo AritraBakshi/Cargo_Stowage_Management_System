@@ -8,8 +8,10 @@ from typing import List
 # To directly call items and container
 from ..models.items import ItemData, Item, Dimensions, Position
 from ..models.containers import Container
+from app.services.placement import PlacementService
 
 router = APIRouter()
+placement_service = PlacementService()
 
 @router.post("/additems")
 async def add_items(file: UploadFile = File(...)):
@@ -128,3 +130,55 @@ async def add_items(file: UploadFile = File(...)):
         )
 
     return {"message": f"Successfully placed {len(result.inserted_ids)} items."}
+
+
+
+@router.post("/placeitems")
+async def place_items_endpoint(items: List[ItemData]):
+    containers_raw = await db.containers.find().to_list(length=1000)
+    containers: List[Container] = [
+        Container(
+            container_id=c["_id"],
+            zone=c["zone"],
+            dimensions=Dimensions(**c["dimensions"]),
+            occupied_volume=c.get("occupied_volume", 0.0)
+        )
+        for c in containers_raw
+    ]
+
+    placed_items = []
+    for item_data in items:
+        item = Item(
+            item_id=item_data.item_id,
+            name=item_data.name,
+            dimensions=Dimensions(
+                width=item_data.width,
+                depth=item_data.depth,
+                height=item_data.height
+            ),
+            mass=item_data.mass,
+            priority=item_data.priority,
+            expiry_date=item_data.expiry_date,
+            usage_limit=item_data.usage_limit,
+            preferred_zone=item_data.preferred_zone
+        )
+
+        try:
+            item = placement_service.place_item(item, containers)
+            placed_items.append(item.dict())
+        except ValueError as e:
+            continue
+
+    if not placed_items:
+        raise HTTPException(status_code=400, detail="No items could be placed.")
+
+    # Insert to DB
+    await db.items.insert_many(placed_items)
+
+    for container in containers:
+        await db.containers.update_one(
+            {"_id": container.container_id},
+            {"$set": {"occupied_volume": container.occupied_volume}}
+        )
+
+    return {"message": f"Placed {len(placed_items)} items."}
