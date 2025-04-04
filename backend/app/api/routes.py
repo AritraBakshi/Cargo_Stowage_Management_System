@@ -5,7 +5,7 @@ from datetime import datetime
 from database import db
 from io import StringIO
 from typing import List
-from ..models.items import ItemData
+from app.models.items import ItemData
 
 router = APIRouter()
 
@@ -15,17 +15,19 @@ async def add_items(file: UploadFile = File(...)):
     content = await file.read()
     decoded_content = content.decode("utf-8")
     df = pd.read_csv(StringIO(decoded_content))
-
     items = []
     for index, row in df.iterrows():
         try:
             # Parse usage_limit using regex
+
             usage_limit_str = row["Usage Limit"]
+            usage_limit_str = str(usage_limit_str).strip()
             match = re.search(r'\d+', usage_limit_str)
+            print("this is match", match)
             if not match:
                 raise ValueError(f"Invalid Usage Limit format: {usage_limit_str}")
             usage_limit = int(match.group())
-
+            print("this is usage limit", usage_limit)
             # Parse expiry_date
             expiry_date_str = row.get("Expiry Date (ISO Format)")
             expiry_date = None

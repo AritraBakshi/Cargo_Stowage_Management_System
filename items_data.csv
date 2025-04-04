@@ -1,0 +1,101 @@
+Item ID,Name,Width (cm),Depth (cm),Height (cm),Mass (kg),Priority (1-100),Expiry Date (ISO Format),Usage Limit,Preferred Zone
+001,First Aid Kit,39,20,89,29,61,2026-08-06,50 uses,Command Center
+002,Battery Pack,23,42,45,35,2,2027-08-04,10 uses,Command Center
+003,Battery Pack,48,7,26,21,59,2027-07-22,10 uses,Cargo Hold
+004,Water Container,18,31,32,17,17,2025-10-25,10 uses,Engineering
+005,Oxygen Cylinder,33,23,88,46,38,2026-01-14,5 uses,Airlock
+006,Oxygen Cylinder,30,19,38,15,41,2027-09-26,100 uses,Crew Quarters
+007,Tool Kit,28,25,97,22,49,2027-11-10,10 uses,Medical Bay
+008,Water Container,19,18,71,23,86,2025-12-11,5 uses,Command Center
+009,Oxygen Cylinder,6,29,10,29,57,2026-07-18,50 uses,Engineering
+010,Battery Pack,48,18,35,44,59,2027-07-05,50 uses,Airlock
+011,Food Packet,42,35,58,26,63,2027-09-23,50 uses,Airlock
+012,Food Packet,48,40,41,21,51,2027-12-22,5 uses,Crew Quarters
+013,Medical Supplies,24,44,65,28,56,2026-08-12,10 uses,Engineering
+014,Oxygen Cylinder,26,23,26,20,29,2027-09-16,30 uses,Command Center
+015,Battery Pack,15,44,8,16,77,2026-12-10,10 uses,Engineering
+016,Battery Pack,38,22,33,22,81,2026-12-28,10 uses,Medical Bay
+017,Food Packet,28,47,26,12,90,2027-04-13,5 uses,Command Center
+018,Food Packet,44,22,92,49,38,2027-03-07,5 uses,Medical Bay
+019,Water Container,29,12,75,49,18,2026-06-10,100 uses,Engineering
+020,First Aid Kit,14,16,99,4,57,2026-10-16,10 uses,Engineering
+021,Oxygen Cylinder,28,32,76,4,41,2025-06-14,10 uses,Airlock
+022,Food Packet,5,17,85,15,99,2027-10-29,30 uses,Cargo Hold
+023,Food Packet,20,33,36,25,8,2025-12-03,5 uses,Crew Quarters
+024,Food Packet,49,37,6,7,66,2025-10-02,10 uses,Engineering
+025,Battery Pack,18,42,52,26,24,2025-04-30,5 uses,Cargo Hold
+026,Oxygen Cylinder,31,15,53,50,93,2027-04-26,30 uses,Airlock
+027,Tool Kit,29,28,76,43,81,2025-06-06,10 uses,Medical Bay
+028,Battery Pack,25,29,25,48,4,2027-01-06,5 uses,Command Center
+029,Medical Supplies,9,44,22,26,47,2026-11-17,50 uses,Medical Bay
+030,Medical Supplies,50,8,37,48,84,2026-03-16,10 uses,Engineering
+031,Battery Pack,47,21,33,1,42,2025-10-28,30 uses,Command Center
+032,Battery Pack,25,22,95,27,23,2027-07-03,100 uses,Command Center
+033,Oxygen Cylinder,35,30,76,18,9,2026-05-26,30 uses,Cargo Hold
+034,Water Container,15,29,83,39,34,2026-01-27,50 uses,Airlock
+035,Water Container,27,15,30,10,83,2025-11-18,100 uses,Crew Quarters
+036,Food Packet,17,36,21,39,60,2026-12-21,5 uses,Engineering
+037,Food Packet,38,20,82,36,54,2025-06-29,5 uses,Cargo Hold
+038,Oxygen Cylinder,39,8,71,23,88,2026-02-09,30 uses,Command Center
+039,First Aid Kit,49,9,89,49,70,2025-09-09,5 uses,Airlock
+040,Battery Pack,13,25,35,1,4,2025-11-20,50 uses,Cargo Hold
+041,Food Packet,35,14,100,1,16,2027-01-17,30 uses,Crew Quarters
+042,Food Packet,30,42,81,15,54,2026-02-09,5 uses,Cargo Hold
+043,Food Packet,23,36,32,28,72,2026-03-08,10 uses,Command Center
+044,Food Packet,36,40,31,11,57,2026-05-23,100 uses,Command Center
+045,Oxygen Cylinder,49,49,77,28,62,2027-05-19,30 uses,Crew Quarters
+046,Water Container,18,30,13,48,37,2027-04-07,50 uses,Engineering
+047,Battery Pack,36,42,98,42,63,2026-04-08,50 uses,Crew Quarters
+048,Water Container,43,14,42,25,66,2026-12-13,10 uses,Crew Quarters
+049,Tool Kit,16,13,46,37,22,2025-09-20,50 uses,Airlock
+050,First Aid Kit,41,10,87,50,72,2025-05-11,100 uses,Cargo Hold
+051,Water Container,50,48,44,10,31,2026-05-20,10 uses,Crew Quarters
+052,Water Container,28,22,58,25,24,2025-05-10,30 uses,Engineering
+053,First Aid Kit,18,43,8,43,8,2025-12-31,5 uses,Medical Bay
+054,Medical Supplies,24,31,36,42,13,2025-11-20,50 uses,Cargo Hold
+055,Tool Kit,6,23,30,32,48,2026-10-25,100 uses,Engineering
+056,Water Container,22,14,33,15,98,2025-11-17,10 uses,Medical Bay
+057,Water Container,20,11,53,12,22,2025-07-19,5 uses,Command Center
+058,Food Packet,37,23,58,15,85,2027-09-30,5 uses,Engineering
+059,Battery Pack,5,42,68,30,61,2025-09-11,10 uses,Crew Quarters
+060,Battery Pack,8,35,58,48,5,2027-11-19,5 uses,Medical Bay
+061,Battery Pack,12,19,86,14,43,2027-05-06,30 uses,Crew Quarters
+062,First Aid Kit,5,30,46,18,75,2026-09-10,10 uses,Medical Bay
+063,Water Container,9,21,35,42,83,2026-02-23,5 uses,Crew Quarters
+064,Oxygen Cylinder,6,31,74,46,86,2026-04-11,100 uses,Cargo Hold
+065,Food Packet,33,37,9,7,42,2027-01-15,100 uses,Airlock
+066,Oxygen Cylinder,27,13,81,6,89,2026-03-02,30 uses,Cargo Hold
+067,Medical Supplies,14,50,29,37,44,2026-06-26,50 uses,Medical Bay
+068,Medical Supplies,38,25,40,3,28,2027-09-21,100 uses,Cargo Hold
+069,First Aid Kit,43,44,31,45,66,2025-07-10,50 uses,Command Center
+070,Oxygen Cylinder,28,34,34,27,22,2025-08-23,5 uses,Airlock
+071,Tool Kit,49,19,25,47,4,2026-05-04,50 uses,Crew Quarters
+072,Food Packet,7,30,52,39,2,2025-10-06,100 uses,Command Center
+073,Oxygen Cylinder,43,10,38,24,31,2025-05-05,30 uses,Command Center
+074,Oxygen Cylinder,22,22,55,48,39,2025-05-22,100 uses,Engineering
+075,Water Container,29,18,33,38,94,2026-03-18,100 uses,Medical Bay
+076,Battery Pack,16,13,42,14,65,2027-03-16,10 uses,Airlock
+077,Medical Supplies,44,42,87,3,65,2025-06-25,100 uses,Medical Bay
+078,Battery Pack,19,14,31,32,24,2026-01-01,100 uses,Cargo Hold
+079,Water Container,27,19,72,18,7,2026-05-12,100 uses,Command Center
+080,Medical Supplies,5,18,50,36,71,2027-04-25,5 uses,Cargo Hold
+081,Oxygen Cylinder,34,31,83,22,20,2027-07-31,5 uses,Airlock
+082,Oxygen Cylinder,16,18,74,42,80,2026-08-26,30 uses,Cargo Hold
+083,Oxygen Cylinder,24,19,100,37,10,2027-03-07,30 uses,Cargo Hold
+084,First Aid Kit,29,49,63,16,17,2027-10-02,100 uses,Engineering
+085,Oxygen Cylinder,18,27,22,1,76,2026-09-25,50 uses,Medical Bay
+086,Medical Supplies,33,29,7,49,25,2027-02-28,100 uses,Cargo Hold
+087,Medical Supplies,42,49,92,13,2,2026-06-30,30 uses,Cargo Hold
+088,First Aid Kit,14,33,30,22,56,2025-11-24,30 uses,Cargo Hold
+089,Battery Pack,14,23,30,37,13,2026-03-20,30 uses,Crew Quarters
+090,First Aid Kit,14,19,81,17,18,2026-03-23,5 uses,Command Center
+091,Food Packet,50,8,63,43,80,2025-08-15,5 uses,Medical Bay
+092,Water Container,27,12,6,41,75,2025-11-04,30 uses,Cargo Hold
+093,Water Container,19,10,60,10,3,2027-05-24,100 uses,Command Center
+094,Medical Supplies,47,31,28,26,74,2026-06-23,50 uses,Engineering
+095,Oxygen Cylinder,12,39,64,3,62,2026-09-09,30 uses,Crew Quarters
+096,Food Packet,19,16,66,29,19,2026-03-08,50 uses,Medical Bay
+097,Oxygen Cylinder,19,19,94,30,76,2026-06-02,30 uses,Cargo Hold
+098,Oxygen Cylinder,24,30,42,22,6,2025-04-11,50 uses,Crew Quarters
+099,First Aid Kit,17,37,72,10,15,2025-05-08,100 uses,Cargo Hold
+100,Water Container,47,19,63,22,2,2026-01-02,30 uses,Command Center
