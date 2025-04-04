@@ -9,6 +9,9 @@ from typing import List
 from ..models.items import ItemData, Item, Dimensions, Position
 from ..models.containers import Container
 from app.services.placement import PlacementService
+from api.services.retrieval import RetrievalService
+from api.services.waste_management import WasteManager
+
 
 router = APIRouter()
 placement_service = PlacementService()
@@ -182,3 +185,50 @@ async def place_items_endpoint(items: List[ItemData]):
         )
 
     return {"message": f"Placed {len(placed_items)} items."}
+
+
+@router.post("/retrieve_item/{item_id}")
+async def retrieve_item_endpoint(item_id: str):
+    containers_raw = await db.containers.find().to_list(length=1000)
+    containers = [
+        Container(
+            container_id=c["_id"],
+            zone=c["zone"],
+            dimensions=Dimensions(**c["dimensions"]),
+            occupied_volume=c.get("occupied_volume", 0.0),
+            items=c.get("items", [])
+        )
+        for c in containers_raw
+    ]
+    
+    retrieval_service = RetrievalService(containers)
+    item = retrieval_service.retrieve_item(item_id)
+
+    await db.items.delete_one({"item_id": item_id})
+
+    await db.containers.update_one(
+        {"_id": item.container_id},
+        {"$pull": {"items": {"item_id": item_id}}}
+    )
+
+    return {"message": f"Item {item_id} retrieved successfully."}
+
+
+@router.post("/dispose_waste")
+async def dispose_waste_items():
+    from datetime import datetime
+    items_raw = await db.items.find().to_list(length=1000)
+    now = datetime.utcnow()
+
+    to_dispose = []
+    for item in items_raw:
+        expired = item.get("expiry_date") and datetime.fromisoformat(item["expiry_date"]) < now
+        used_up = item.get("usage_limit", 0) <= item.get("usage_count", 0)
+        if expired or used_up:
+            to_dispose.append(item["item_id"])
+            await db.items.update_one(
+                {"item_id": item["item_id"]},
+                {"$set": {"is_waste": True, "waste_reason": "expired" if expired else "usage limit exceeded"}}
+            )
+
+    return {"disposed_items": to_dispose}
