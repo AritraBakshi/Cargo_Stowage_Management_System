@@ -11,8 +11,6 @@ from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
 from app.models.items import Dimensions, Position, Item
 from datetime import datetime
-
-
 from pymongo import UpdateOne  # Required import
 
 
@@ -451,14 +449,48 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
     return {"succeess":True,"message": f"Item {item_id} retrieved successfully."}
 
 
-
 @router.get("/waste/identify")
 async def identify_waste():
     now = datetime.utcnow()
-    waste_items = await db.items.find({
-        "$or": [
-            {"expiry_date": {"$lt": now}},  # Expired
-            {"usage_limit": {"$lte": 0}}   # Usage limit reached
-        ]
-    }).to_list(length=1000)
-    return {"waste_items": waste_items}
+
+    # Fetch all items
+    all_items = await db.items.find().to_list(length=1000)
+
+    # For response only: track which items are marked as waste
+    waste_items = []
+
+    # Prepare bulk update operations
+    bulk_operations = []
+
+    # Process items
+    for item in all_items:
+        waste_reason = None
+
+        if item.get("expiry_date") and item["expiry_date"] < now:
+            waste_reason = "expired"
+        elif item.get("usage_limit") is not None and item["usage_limit"] <= 0:
+            waste_reason = "usage_limit_reached"
+
+        if waste_reason:
+            # Add to bulk ops
+            bulk_operations.append(UpdateOne(
+                {"item_id": item["item_id"]},
+                {"$set": {"waste_reason": waste_reason, "is_waste": True}}
+            ))
+
+            # Add serializable info for response
+            waste_items.append({
+                "item_id": item["item_id"],
+                "name": item.get("name"),
+                "waste_reason": waste_reason
+            })
+
+    # Perform bulk write
+    if bulk_operations:
+        result = await db.items.bulk_write(bulk_operations)
+        print(f"Bulk update result: {result.bulk_api_result}")
+
+    return {
+        "message": "Waste identification completed successfully.",
+        "waste_items": waste_items
+    }
