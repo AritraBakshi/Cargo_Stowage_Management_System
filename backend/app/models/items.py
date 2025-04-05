@@ -4,6 +4,10 @@ from datetime import datetime
 from .container import Dimensions
 
 
+class ItemRetrieveRequest(BaseModel):
+    item_id: str
+
+
 class Position(BaseModel):
     #Position of an item within a container
     start_coordinates: Dimensions
@@ -21,6 +25,7 @@ class Item(BaseModel):
     usage_count: int = 0
     preferred_zone: str
     container_id: Optional[str] = None
+    # container_id: str
     position: Optional[Position] = None
     is_waste: bool = False
     waste_reason: Optional[str] = None

@@ -77,15 +77,18 @@ class RetrievalService:
         return reinserted, target_item
 
     def retrieve_item(self, item_id: str) -> Item:
-        print("this is self containers",type(self.containers.values()))
+        # print("this is self containers",type(self.containers.values()))
         for container in self.containers.values():
             for item in container.items:
                 if item["item_id"] == item_id:
+                    print('enter item id')
                     if self.is_accessible(item, container):
+                        print("item is accesible")
                         container.items.remove(item)
                         return item
                     else:
-                        _, retrieved = self.rearrange_to_retrieve(container, item)
+                        retrieved = self.rearrange_to_retrieve(container, item)
+                        print("rearranged items are ", retrieved)
                         return retrieved
                 # print("hi mom in intem")
 

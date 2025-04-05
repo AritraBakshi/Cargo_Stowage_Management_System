@@ -5,7 +5,7 @@ from datetime import datetime
 from database import db
 from io import StringIO
 from typing import List
-from app.models.items import ItemData
+from app.models.items import ItemData,ItemRetrieveRequest
 from app.models.container import Container
 from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
@@ -162,6 +162,7 @@ async def get_containers():
 async def get_items():
     items_raw = await db.items.find().to_list(length=1000)
     # print("this is items raw", items_raw)
+    print("first item",items_raw[0])
     items: List[Item] = [
         Item(
             item_id=i["item_id"],
@@ -376,8 +377,13 @@ async def place_items_endpoint(items: List[ItemData]):
 
     return {"success": True, "placements": placed_items}
 
-@router.post("/retrieve_item/{item_id}")
-async def retrieve_item_endpoint(item_id: str):
+@router.post("/retrieveitem")
+async def retrieve_item_endpoint(body:ItemRetrieveRequest):
+    print("this is body",body)
+    item_id = body.item_id
+    print("this is item id", item_id)
+    fetcheditem = await db.items.find_one({"item_id": item_id})
+    print("fetcched item", fetcheditem)
     # Fetch containers from MongoDB and convert to Container models
     containers_raw = await db.containers.find().to_list(length=1000)
     containers = [
@@ -393,16 +399,20 @@ async def retrieve_item_endpoint(item_id: str):
     
     retrieval_service = RetrievalService(containers)
     item = retrieval_service.retrieve_item(item_id)
+    print("this is item before upadte", item)
 
+    newitem = await db.items.find_one({"item_id": item_id})
+
+    print("item after update", newitem)
     # Update database after retrieval
     await db.items.delete_one({"item_id": item_id})
 
     # Update the container's items list
-    print("this is item", item)
+    print("this is item", newitem)
     # print("type of items", type(item))
     await db.containers.update_one(
-        {"container_id": item["container_id"]},
+        {"container_id": newitem["container_id"]},
         {"$pull": {"items": {"item_id": item_id}}}
     )
 
-    return {"message": f"Item {item_id} retrieved successfully."}
+    return {"succeess":True,"message": f"Item {item_id} retrieved successfully."}
