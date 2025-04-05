@@ -11,6 +11,7 @@ from ..models.containers import Container
 from app.services.placement import PlacementService
 from api.services.retrieval import RetrievalService
 from api.services.waste_management import WasteManager
+from api.services.return_service import ReturnService
 
 
 router = APIRouter()
@@ -232,3 +233,67 @@ async def dispose_waste_items():
             )
 
     return {"disposed_items": to_dispose}
+
+# To initialize containers with item
+async def load_containers_with_items() -> List[Container]:
+    containers_raw = await db.containers.find().to_list(length=1000)
+    items_raw = await db.items.find().to_list(length=1000)
+
+    container_map = {
+        c["_id"]: Container(
+            container_id=c["_id"],
+            zone=c["zone"],
+            dimensions=Dimensions(**c["dimensions"]),
+            occupied_volume=c.get("occupied_volume", 0.0),
+            items=[]
+        )
+        for c in containers_raw
+    }
+
+    for item in items_raw:
+        container_id = item.get("container_id")
+        if container_id in container_map:
+            container_map[container_id].items.append(Item(**item))
+
+    return list(container_map.values())
+
+@router.post("/return/waste-items")
+async def move_waste_items_to_container():
+    containers = await load_containers_with_items()
+    return_service = ReturnService(containers)
+    return_service.move_waste_to_return_container()
+
+    # Update DB after moving items
+    for container in containers:
+        await db.containers.update_one(
+            {"_id": container.container_id},
+            {"$set": {
+                "occupied_volume": container.occupied_volume,
+                "items": [item.dict() for item in container.items]
+            }}
+        )
+
+    return {"message": "Waste items moved and containers updated."}
+
+
+@router.get("/return/waste-container")
+async def view_waste_container_contents():
+    containers = await load_containers_with_items()
+    return_service = ReturnService(containers)
+    items = return_service.show_waste_contents()
+    return {"waste_container": [item.dict() for item in items]}
+
+
+@router.delete("/return/waste-container")
+async def clear_waste_container():
+    containers = await load_containers_with_items()
+    return_service = ReturnService(containers)
+    return_service.clear_waste()
+
+    await db.containers.update_one(
+        {"_id": "waste"},
+        {"$set": {"items": []}}
+    )
+
+    return {"message": "Waste container cleared."}
+
