@@ -1,7 +1,7 @@
 from typing import List
 from app.models.items import Item
 from app.models.container import Container
-from app.services import binpacking  # Import your packing logic
+from app.utils import binpacking2  # Import your packing logic
 
 class ReturnService:
     def __init__(self, containers: List[Container]):
@@ -25,7 +25,7 @@ class ReturnService:
 
             if removed_items:
                 container.items = remaining_items
-                binpacking.repack_items_in_container(container)  # Rearrange remaining items
+                binpacking2.repack_items_in_container(container)  # Rearrange remaining items
 
     def show_waste_contents(self) -> List[Item]:
         return self.waste_container.items
