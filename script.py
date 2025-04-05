@@ -5,10 +5,12 @@ from datetime import datetime, timedelta
 # Generate sample data
 items = []
 zones = ["Crew Quarters", "Airlock", "Medical Bay", "Cargo Hold", "Engineering", "Command Center"]
+# zones = ["Airlock"]
+
 names = ["Food Packet", "Oxygen Cylinder", "First Aid Kit", "Water Container", "Tool Kit", "Medical Supplies", "Battery Pack"]
 usage_limits = ["5 uses", "10 uses", "30 uses", "50 uses", "100 uses"]
 
-for i in range(1, 969):
+for i in range(1, 101):
     item_id = f"{i:03}"
     name = random.choice(names)
     width = random.randint(5, 50)
@@ -19,6 +21,7 @@ for i in range(1, 969):
     expiry_date = (datetime.now() + timedelta(days=random.randint(0, 1000))).strftime("%Y-%m-%d") 
     usage_limit = random.choice(usage_limits)
     preferred_zone = random.choice(zones)
+    # preferred_zone = zones[0]  # Only one zone for this example
 
     items.append({
         "Item ID": item_id,
