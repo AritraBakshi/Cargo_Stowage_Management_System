@@ -494,3 +494,102 @@ async def identify_waste():
         "message": "Waste identification completed successfully.",
         "waste_items": waste_items
     }
+
+
+@router.post("/place")
+async def placeitem():
+    pass
+
+
+from app.models.requestsschema import wasteretunrreq
+@router.post("/waste/returnplan")
+async def returnplan(body: wasteretunrreq):
+    undocking_container_id = body.undockingContainerId
+    max_weight = body.maxWeight
+
+    # Fetch and validate container
+    cont_raw = await db.containers.find_one({"container_id": undocking_container_id})
+    if not cont_raw:
+        raise HTTPException(status_code=404, detail="Container not found")
+    if cont_raw.get("occupied_volume", 0) > 0:
+        raise HTTPException(status_code=400, detail="Container must be empty")
+
+    # Create fresh container model for simulation
+    container = Container(
+        container_id=cont_raw["container_id"],
+        zone=cont_raw["zone"],
+        dimensions=Dimensions(**cont_raw["dimensions"]),
+        occupied_volume=0.0,
+        items=[]
+    )
+
+    # Fetch and validate waste items
+    waste_items = await db.items.find({"is_waste": True}).to_list(length=1000)
+    total_mass = sum(item.get("mass", 0) for item in waste_items)
+    if total_mass > int(max_weight):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Total mass {total_mass}kg exceeds limit {max_weight}kg"
+        )
+
+    # Convert to Item objects
+    items_to_place = []
+    for w_item in waste_items:
+        items_to_place.append(Item(
+            item_id=w_item["item_id"],
+            name=w_item.get("name", "Waste Item"),
+            dimensions=Dimensions(**w_item["dimensions"]),
+            mass=w_item["mass"],
+            priority=w_item.get("priority", 0),
+            expiry_date=w_item.get("expiry_date"),
+            usage_limit=w_item.get("usage_limit"),
+            preferred_zone=w_item.get("preferred_zone"),
+            position=Position(**w_item["position"]) if w_item.get("position") else None
+        ))
+
+    # Simulate placement
+    placed_items = []
+    for item in items_to_place:
+        try:
+            placed_item = placement_service.place_item(item, [container])
+            
+            # Update container simulation
+            container.items.append({
+                "item_id": placed_item.item_id,
+                "position": placed_item.position.model_dump(),
+                "dimensions": placed_item.dimensions.model_dump(),
+                "mass": placed_item.mass,
+                "priority": placed_item.priority
+            })
+            container.occupied_volume += (
+                placed_item.dimensions.width *
+                placed_item.dimensions.depth *
+                placed_item.dimensions.height
+            )
+            placed_items.append(placed_item.model_dump())
+        except ValueError as e:
+            continue
+
+    if not placed_items:
+        raise HTTPException(status_code=400, detail="No items could be placed")
+    
+    if len(placed_items) != len(waste_items):
+        raise HTTPException(status_code=400, detail="Not all waste items could be placed")
+
+    # Calculate metrics
+    total_volume = (
+        container.dimensions.width *
+        container.dimensions.depth *
+        container.dimensions.height
+    )
+    utilization = container.occupied_volume / total_volume * 100
+
+    return {
+        "container_id": undocking_container_id,
+        "placed_items": placed_items,
+        "total_mass": total_mass,
+        "volume_utilization": f"{utilization:.2f}%",
+        "plan_valid": len(placed_items) == len(waste_items)
+    }
+
+
