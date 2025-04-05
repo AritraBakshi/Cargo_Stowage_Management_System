@@ -81,18 +81,15 @@ class RetrievalService:
         for container in self.containers.values():
             for item in container.items:
                 if item["item_id"] == item_id:
-                    print('enter item id')
                     if self.is_accessible(item, container):
-                        print("item is accesible")
-                        container.items.remove(item)
+                        # print("item is accesible",item)
+                        print("hello")
+                        item["usage_limit"] = int(item["usage_limit"]) - 1
+                        print("new usage limit is ", item["usage_limit"])
                         return item
                     else:
                         retrieved = self.rearrange_to_retrieve(container, item)
                         print("rearranged items are ", retrieved)
                         return retrieved
-                # print("hi mom in intem")
-
-            # print("hi mom in cont")
-            # print(container)
 
         raise HTTPException(status_code=404, detail="Item not found.")

@@ -10,6 +10,7 @@ from app.models.container import Container
 from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
 from app.models.items import Dimensions, Position, Item
+from datetime import datetime
 
 
 from pymongo import UpdateOne  # Required import
@@ -379,11 +380,8 @@ async def place_items_endpoint(items: List[ItemData]):
 
 @router.post("/retrieveitem")
 async def retrieve_item_endpoint(body:ItemRetrieveRequest):
-    print("this is body",body)
     item_id = body.item_id
-    print("this is item id", item_id)
     fetcheditem = await db.items.find_one({"item_id": item_id})
-    print("fetcched item", fetcheditem)
     # Fetch containers from MongoDB and convert to Container models
     containers_raw = await db.containers.find().to_list(length=1000)
     containers = [
@@ -398,21 +396,69 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
     ]
     
     retrieval_service = RetrievalService(containers)
-    item = retrieval_service.retrieve_item(item_id)
+    item = retrieval_service.retrieve_item(item_id) #retreved item withoout container id but updated usage
     print("this is item before upadte", item)
+    new_fetched_item = await db.items.find_one({"item_id": item_id})
+    print("usage limit is ", item["usage_limit"])
+    if item["usage_limit"] >= -1:
+        # Update the item in the database\
+        print("entered if block")
+        await db.items.update_one(
+            {"item_id": item_id},
+            {"$set": {
+                "usage_limit": item["usage_limit"]
+            }}
+        )
 
-    newitem = await db.items.find_one({"item_id": item_id})
+        await db.containers.update_one(
+            {
+                "container_id": new_fetched_item["container_id"],
+                "items.item_id": item_id
+            },
+            {"$set": {
+                "items.$.usage_limit": item["usage_limit"]                
+                }
+            }
+        )
+    else:
+        # # Remove the item from the database
+        # await db.items.delete_one({"item_id": item_id})
+        # # print("this is item after deletion", item)
+        # await db.containers.update_one(
+        #     {"container_id": new_fetched_item["container_id"]},
+        #     # {"$pull": {"items": {"item_id": item_id}}}
+        #     {"$set": {
+        #         "items.$.usage_limit": item["usage_limit"],
+        #         }
+        #     }
+        # )
+        raise HTTPException(status_code=404, detail="Item Fully Retirieved or not found")
 
-    print("item after update", newitem)
+
+    # print("item after update", new_fetched_item)
     # Update database after retrieval
-    await db.items.delete_one({"item_id": item_id})
+    
+    # await db.items.delete_one({"item_id": item_id})
 
     # Update the container's items list
-    print("this is item", newitem)
+    # print("this is item", new_fetched_item)
     # print("type of items", type(item))
-    await db.containers.update_one(
-        {"container_id": newitem["container_id"]},
-        {"$pull": {"items": {"item_id": item_id}}}
-    )
+    # await db.containers.update_one(
+    #     {"container_id": new_fetched_item["container_id"]},
+    #     {"$pull": {"items": {"item_id": item_id}}}
+    # )
 
     return {"succeess":True,"message": f"Item {item_id} retrieved successfully."}
+
+
+
+@router.get("/waste/identify")
+async def identify_waste():
+    now = datetime.utcnow()
+    waste_items = await db.items.find({
+        "$or": [
+            {"expiry_date": {"$lt": now}},  # Expired
+            {"usage_limit": {"$lte": 0}}   # Usage limit reached
+        ]
+    }).to_list(length=1000)
+    return {"waste_items": waste_items}
