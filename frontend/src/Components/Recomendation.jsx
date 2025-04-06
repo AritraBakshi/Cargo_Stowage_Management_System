@@ -38,7 +38,7 @@ export default function Recommendation() {
 
     const handleSubmit = async () => {
         try {
-            const res = await axios.post(`${blink}/placeitems`, items);
+            const res = await axios.post(`${blink}/placement`, items);
             console.log(res.data);
             setStatus("Items submitted successfully!");
             setPlacements(res.data.placements); // <-- Save placements

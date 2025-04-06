@@ -1,1 +1,5 @@
 PYTHONPATH=$PYTHONPATH:. python app/main.py
+
+
+"dimensions":\s*\{([\s\S]*?)\}\s*,?
+$1,

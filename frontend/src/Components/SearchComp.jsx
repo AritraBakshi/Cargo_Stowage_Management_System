@@ -26,7 +26,7 @@ export default function SearchRetrieve() {
   const handleRetrieve = async () => {
     if (!retrieveId.trim()) return setRetrieveStatus("Please enter an item ID to retrieve.");
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/retrieveitem", {
+      const res = await axios.post("http://127.0.0.1:8000/api/retrieve", {
         item_id: retrieveId,
       });
   

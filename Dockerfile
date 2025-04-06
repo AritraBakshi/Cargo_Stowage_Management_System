@@ -38,4 +38,4 @@ ENV PYTHONPATH="${PYTHONPATH}:/app"
 EXPOSE 8000
 
 # Start MongoDB then run FastAPI
-CMD mongod --fork --logpath /var/log/mongod.log && python3 app/main.py
+CMD bash -c "mongod --logpath /var/log/mongod.log --bind_ip_all & python3 app/main.py"

@@ -4,7 +4,7 @@ from fastapi import APIRouter, File, UploadFile, HTTPException, status
 from datetime import datetime
 from database import db
 from io import StringIO
-from typing import List
+from typing import List, Optional
 from app.models.items import ItemData,ItemRetrieveRequest
 from app.models.container import Container
 from app.services.placement import PlacementService
@@ -12,6 +12,7 @@ from app.services.retrieval import RetrievalService
 from app.models.items import Dimensions, Position, Item
 from datetime import datetime
 from pymongo import UpdateOne  # Required import
+from fastapi import Query
 
 
 placement_service = PlacementService()
@@ -158,10 +159,28 @@ async def get_containers():
     return {"containers": [container.dict() for container in containers]}
 
 @router.get("/items")
-async def get_items():
+async def get_items(item_id: Optional[str] = Query(None, description="The ID of the item to retrieve")):
+    if item_id:
+        item = await db.items.find_one({"item_id": item_id})
+        if not item:
+            raise HTTPException(status_code=404, detail="Item not found")
+        
+        item_data = Item(
+            item_id=item["item_id"],
+            name=item["name"],
+            dimensions=Dimensions(**item["dimensions"]),
+            mass=item["mass"],
+            priority=item["priority"],
+            expiry_date=item.get("expiry_date"),
+            usage_limit=item.get("usage_limit"),
+            preferred_zone=item.get("preferred_zone"),
+            container_id=item.get("container_id"),
+            position=Position(**item["position"]) if "position" in item else None
+        )
+        return {"item": item_data.model_dump()}
+    
+    # If no item_id, return list of items
     items_raw = await db.items.find().to_list(length=1000)
-    # print("this is items raw", items_raw)
-    print("first item",items_raw[0])
     items: List[Item] = [
         Item(
             item_id=i["item_id"],
@@ -177,29 +196,7 @@ async def get_items():
         )
         for i in items_raw
     ]
-    return {"items": [item.dict() for item in items]}  
-
-@router.get("/items/{item_id}")
-async def get_item(item_id: str):
-    item = await db.items.find_one({"item_id": item_id})
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    
-    item_data = Item(
-        item_id=item["item_id"],
-        name=item["name"],
-        dimensions=Dimensions(**item["dimensions"]),
-        mass=item["mass"],
-        priority=item["priority"],
-        expiry_date=item.get("expiry_date"),
-        usage_limit=item.get("usage_limit"),
-        preferred_zone=item.get("preferred_zone"),
-        container_id=item.get("container_id"),
-        position=Position(**item["position"]) if "position" in item else None
-    )
-    return {"item": item_data.model_dump()}
-
-
+    return {"items": [item.model_dump() for item in items]}
 @router.get("/containers/{container_id}")
 async def get_container(container_id: str):
     # Fetch container from database
@@ -220,7 +217,7 @@ async def get_container(container_id: str):
     return {"container": container_data.model_dump()}
 
 
-# @router.post("/placeitems")
+# @router.post("/placement")
 # async def place_items_endpoint(items: List[ItemData]):
 #     containers_raw = await db.containers.find().to_list(length=1000)
 #     containers: List[Container] = [
@@ -296,7 +293,7 @@ async def get_container(container_id: str):
 
 #     return {"success":True,"placements":placed_items}
 
-@router.post("/placeitems")
+@router.post("/placement")
 async def place_items_endpoint(items: List[ItemData]):
     containers_raw = await db.containers.find().to_list(length=1000)
     containers: List[Container] = [
@@ -397,7 +394,7 @@ async def place_items_endpoint(items: List[ItemData]):
 
     return {"success": True, "placements": placed_items}
 
-@router.post("/retrieveitem")
+@router.post("/retrieve")
 async def retrieve_item_endpoint(body:ItemRetrieveRequest):
     item_id = body.item_id
     fetcheditem = await db.items.find_one({"item_id": item_id})
@@ -416,12 +413,12 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
     
     retrieval_service = RetrievalService(containers)
     item = retrieval_service.retrieve_item(item_id) #retreved item withoout container id but updated usage
-    print("this is item before upadte", item)
+    # print("this is item before upadte", item)
     new_fetched_item = await db.items.find_one({"item_id": item_id})
-    print("usage limit is ", item["usage_limit"])
+    # print("usage limit is ", item["usage_limit"])
     if item["usage_limit"] >= -1:
         # Update the item in the database\
-        print("entered if block")
+        # print("entered if block")
         await db.items.update_one(
             {"item_id": item_id},
             {"$set": {
@@ -539,7 +536,7 @@ async def placeitem():
 
 
 from app.models.requestsschema import wasteretunrreq
-@router.post("/waste/returnplan")
+@router.post("/waste/return-plan")
 async def returnplan(body: wasteretunrreq):
     undocking_container_id = body.undockingContainerId
     max_weight = body.maxWeight
