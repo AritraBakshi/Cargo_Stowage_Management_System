@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Home, Briefcase, Compass, FolderOpen } from "lucide-react";
+import { Home, Briefcase, Compass, FolderOpen, WashingMachine } from "lucide-react";
 
 export default function FloatingNavbar() {
   return (
     <div className="fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-full top-4 px-32 py-4 gap-10 flex space-x-4 border border-gray-300">
       <NavItem to="/" icon={<Home size={24} />} label="Home" />
-      <NavItem to="/placement" icon={<Briefcase size={24} />} label="Placement" />
+      <NavItem to="/placement" icon={<Briefcase size={24} />} label="Place Item" />
       <NavItem to="/recommendation" icon={<Compass size={24} />} label="Recommendation" />
-      <NavItem to="/retrieve" icon={<FolderOpen size={24} />} label="Retrieve" />
+      <NavItem to="/retrieve" icon={<FolderOpen size={24} />} label="Search & Retrieve" />
+      <NavItem to={"/waste"} icon={<WashingMachine size={24} />} label="Waste" />
     </div>
   );
 }

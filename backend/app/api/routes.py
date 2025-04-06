@@ -181,12 +181,12 @@ async def get_items():
 
 @router.get("/items/{item_id}")
 async def get_item(item_id: str):
-    item = await db.items.find_one({"_id": item_id})
+    item = await db.items.find_one({"item_id": item_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
     item_data = Item(
-        item_id=item["_id"],
+        item_id=item["item_id"],
         name=item["name"],
         dimensions=Dimensions(**item["dimensions"]),
         mass=item["mass"],
@@ -388,7 +388,7 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
             zone=c["zone"],
             dimensions=Dimensions(**c["dimensions"]),
             occupied_volume=c.get("occupied_volume", 0.0),
-            items=[item for item in c.get("items")]  # Convert items to Item models
+            items=[item for item in c.get("items",[])]  # Convert items to Item models
         )
         for c in containers_raw
     ]
