@@ -18,7 +18,7 @@ from fastapi import Query
 placement_service = PlacementService()
 router = APIRouter()
 
-@router.post("/additems")
+@router.post("/import/items")
 async def add_items(file: UploadFile = File(...)):
 
     # Read CSV content
@@ -99,7 +99,7 @@ async def add_items(file: UploadFile = File(...)):
 
     return {"message": f"Successfully added {len(result.inserted_ids)} items."}
 
-@router.post('/addcontainers')
+@router.post('/import/containers')
 async def add_containers(file: UploadFile = File(...)):
     # Read CSV content
     content = await file.read()

@@ -36,8 +36,8 @@ export default function HomePage() {
     formData.append("file", file);
 
     const endpoint = isItemUpload
-      ? "http://127.0.0.1:8000/api/additems"
-      : "http://127.0.0.1:8000/api/addcontainers";
+      ? "http://127.0.0.1:8000/api/import/items"
+      : "http://127.0.0.1:8000/api/import/containers";
 
     try {
       const res = await axios.post(endpoint, formData, {
