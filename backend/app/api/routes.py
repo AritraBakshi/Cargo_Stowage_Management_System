@@ -199,6 +199,27 @@ async def get_item(item_id: str):
     )
     return {"item": item_data.model_dump()}
 
+
+@router.get("/containers/{container_id}")
+async def get_container(container_id: str):
+    # Fetch container from database
+    container = await db.containers.find_one({"container_id": container_id})
+    
+    if not container:
+        raise HTTPException(status_code=404, detail="Container not found")
+    
+    # Convert to Container model
+    container_data = Container(
+        container_id=container["container_id"],
+        zone=container["zone"],
+        dimensions=Dimensions(**container["dimensions"]),
+        occupied_volume=container.get("occupied_volume", 0.0),
+        items=container.get("items", [])  # Handle missing items field
+    )
+    
+    return {"container": container_data.model_dump()}
+
+
 # @router.post("/placeitems")
 # async def place_items_endpoint(items: List[ItemData]):
 #     containers_raw = await db.containers.find().to_list(length=1000)
@@ -452,49 +473,65 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
 @router.get("/waste/identify")
 async def identify_waste():
     now = datetime.utcnow()
-
-    # Fetch all items
     all_items = await db.items.find().to_list(length=1000)
-
-    # For response only: track which items are marked as waste
     waste_items = []
-
-    # Prepare bulk update operations
     bulk_operations = []
 
-    # Process items
     for item in all_items:
         waste_reason = None
-
         if item.get("expiry_date") and item["expiry_date"] < now:
-            waste_reason = "expired"
+            waste_reason = "Expired"
         elif item.get("usage_limit") is not None and item["usage_limit"] <= 0:
-            waste_reason = "usage_limit_reached"
+            waste_reason = "Out of Uses"
 
         if waste_reason:
-            # Add to bulk ops
             bulk_operations.append(UpdateOne(
                 {"item_id": item["item_id"]},
                 {"$set": {"waste_reason": waste_reason, "is_waste": True}}
             ))
 
-            # Add serializable info for response
+            # Build position data if exists
+            position = {}
+            if "position" in item:
+                pos = item["position"]
+                position = {
+                    "startCoordinates": {
+                        "width": pos["start_coordinates"]["width"],
+                        "depth": pos["start_coordinates"]["depth"],
+                        "height": pos["start_coordinates"]["height"]
+                    },
+                    "endCoordinates": {
+                        "width": pos["end_coordinates"]["width"],
+                        "depth": pos["end_coordinates"]["depth"],
+                        "height": pos["end_coordinates"]["height"]
+                    }
+                }
+
             waste_items.append({
-                "item_id": item["item_id"],
-                "name": item.get("name"),
-                "waste_reason": waste_reason
+                "itemId": item["item_id"],
+                "name": item.get("name", "Unnamed Item"),
+                "reason": waste_reason,
+                "containerId": item.get("container_id", "Unknown"),
+                "position": position
             })
 
-    # Perform bulk write
     if bulk_operations:
-        result = await db.items.bulk_write(bulk_operations)
-        print(f"Bulk update result: {result.bulk_api_result}")
+        try:
+            result = await db.items.bulk_write(bulk_operations)
+            return {
+                "success": True,
+                "wasteItems": waste_items
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
 
     return {
-        "message": "Waste identification completed successfully.",
-        "waste_items": waste_items
+        "success": True,
+        "wasteItems": waste_items
     }
-
 
 @router.post("/place")
 async def placeitem():

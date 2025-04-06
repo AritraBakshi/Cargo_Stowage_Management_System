@@ -41,7 +41,7 @@ export default function SearchRetrieve() {
     } catch (err) {
       console.error(err);
       setRetrievedItem(null);
-      setRetrieveStatus("Retrieval failed!");
+      setRetrieveStatus("Retrieval failed! or fully Retrieved");
     }
   };
   

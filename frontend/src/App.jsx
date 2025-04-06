@@ -4,7 +4,8 @@ import HomePage from './Components/Homepage'
 import FloatingNavbar from './Components/Navbar'
 import Recommendation from './Components/Recomendation'
 import SearchRetrieve from './Components/SearchComp'
-
+import ContainerDetails from './Components/Containerdetails'
+import WasteManagement from './Components/Wastemanagement'
 function App() {
   return (
     <>
@@ -13,6 +14,8 @@ function App() {
         <Route path='/' element={<HomePage/>} />
         <Route path='/recommendation' element={<Recommendation/>} />
         <Route path='/retrieve' element={<SearchRetrieve/>} />
+        <Route path='/details' element={<ContainerDetails/>} />
+        <Route path='/waste' element={<WasteManagement/>} />
       </Routes>
     </>
   )

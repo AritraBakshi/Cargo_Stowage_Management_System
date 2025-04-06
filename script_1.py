@@ -3,7 +3,7 @@ import random
 
 # Define zones and generate container IDs
 zones = ["Crew Quarters", "Airlock", "Medical Bay", "Cargo Hold", "Engineering", "Laboratory"]
-container_ids = [f"cont{chr(65 + i)}" for i in range(100)]  # Generates contA, contB, ..., contZ
+container_ids = [f"cont{chr(65 + i)}" for i in range(15)]  # Generates contA, contB, ..., contZ
 
 # Generate sample data
 containers = []
