@@ -6,6 +6,16 @@ from api.routes import router
 # from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from database import db
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "*"
+]
 
 # 🔐 MongoDB connection string (secured via .env file)
 MONGO_URI = "mongodb+srv://arkabasak62:1234@cluster0.kakqi.mongodb.net/?appName=Cluster0"
@@ -18,7 +28,13 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI app with lifespan context
 app = FastAPI(lifespan=lifespan)
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(router, prefix="/api")
 
 @app.get("/")
