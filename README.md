@@ -155,3 +155,19 @@ Your solution should implement all the APIs described in the problem statement:
 
 ---
 
+## 🧨 Worst Case Scenarios
+
+- **Placement & Bin Packing:**  
+  - Container is nearly full → all positions must be tested.
+  - All rotations must be checked.
+  - Overlap test per position against `m` items → `O(V * m)`
+
+- **Retrieval:**  
+  - Target item is deeply buried → many items (`b`) must be removed and re-packed.
+  - Repacking blockers one-by-one → `O(b²)` in worst-case.
+
+- **Return Service:**  
+  - All containers have waste items → all must be repacked.
+  - Worst case: every container has `m` items, leading to `O(n * m²)`.
+
+---
