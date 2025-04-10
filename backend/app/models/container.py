@@ -28,3 +28,15 @@ class ContainerData(BaseModel):
     width: float
     depth: float
     height: float
+
+
+class ContainerRequest(BaseModel):
+    container_id: str = Field(..., alias="containerId")
+    zone: str
+    width: float
+    depth: float
+    height: float
+
+    class Config:
+        populate_by_name = True
+        validate_by_name = True

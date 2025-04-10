@@ -5,7 +5,8 @@ from datetime import datetime
 from database import db
 from io import StringIO
 from typing import List, Optional
-from app.models.items import ItemData,ItemRetrieveRequest, PlacementRequest
+from app.models.items import ItemData,ItemRetrieveRequest
+from app.models.items import PlacementRequest
 from app.models.container import Container
 from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
@@ -293,23 +294,127 @@ async def get_container(container_id: str):
 
 #     return {"success":True,"placements":placed_items}
 
+# @router.post("/placement")
+# async def place_items_endpoint(request: PlacementRequest):
+#     items = request.items
+#     containers_raw = await db.containers.find().to_list(length=1000)
+#     containers: List[Container] = [
+#         Container(
+#             container_id=c["container_id"],
+#             zone=c["zone"],
+#             dimensions=Dimensions(**c["dimensions"]),
+#             occupied_volume=c.get("occupied_volume", 0.0),
+#             items=c.get("items", [])  # Load existing items from the database
+#         )
+#         for c in containers_raw
+#     ]
+
+#     placed_items = []
+#     for item_data in items:
+#         item = Item(
+#             item_id=item_data.item_id,
+#             name=item_data.name,
+#             dimensions=Dimensions(
+#                 width=item_data.width,
+#                 depth=item_data.depth,
+#                 height=item_data.height
+#             ),
+#             mass=item_data.mass,
+#             priority=item_data.priority,
+#             expiry_date=item_data.expiry_date,
+#             usage_limit=item_data.usage_limit,
+#             preferred_zone=item_data.preferred_zone
+#         )
+
+#         try:
+#             item = placement_service.place_item(item, containers)
+#             placed_items.append(item.model_dump())  # <-- Position is still a Pydantic model here
+
+#             # Find the container the item was placed into
+#             container = next(
+#                 (cont for cont in containers if cont.container_id == item.container_id),
+#                 None
+#             )
+#             if container:
+#                 # Append item details to the container's items list
+#                 item_info = {
+#                     "item_id": item.item_id,
+#                     "position": item.position.model_dump(),  # Correct: dict
+#                     "dimensions": {
+#                         "width": item.dimensions.width,
+#                         "depth": item.dimensions.depth,
+#                         "height": item.dimensions.height
+#                     },
+#                     "mass": item.mass,
+#                     "priority": item.priority,
+#                     "expiry_date": item.expiry_date,
+#                     "usage_limit": item.usage_limit
+#                 }
+#                 container.items.append(item_info)
+#         except ValueError as e:
+#             continue
+        
+#     if not placed_items:
+#         raise HTTPException(status_code=400, detail="No items could be placed.")
+#     # print("this is placed items", placed_items)
+#     # print('this is container item', containers)
+#     # Prepare bulk operations
+#     bulk_item_operations = [
+#         UpdateOne(
+#             {"item_id": placed_item["item_id"]},
+#             {"$set": {
+#                 "container_id": placed_item["container_id"],
+#                 "position": placed_item["position"]  # Fix: Convert here
+#             }}
+#         )
+#         for placed_item in placed_items
+#     ]
+
+#     bulk_container_operations = [
+#         UpdateOne(
+#             {"container_id": container.container_id},
+#             {"$set": {
+#                 "occupied_volume": container.occupied_volume,
+#                 "items": container.items  # Update the items array
+#             }}
+#         )
+#         for container in containers
+#     ]
+
+
+#     try:
+#         if bulk_item_operations:
+#             await db.items.bulk_write(bulk_item_operations, ordered=False)
+        
+#         if bulk_container_operations:
+#             await db.containers.bulk_write(bulk_container_operations, ordered=False)
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Bulk update failed: {str(e)}"
+#         )
+
+#     return {"success": True, "placements": placed_items}
+
 @router.post("/placement")
 async def place_items_endpoint(request: PlacementRequest):
-    items = request.items
-    containers_raw = await db.containers.find().to_list(length=1000)
+    # Convert incoming containers to Container models
     containers: List[Container] = [
         Container(
-            container_id=c["container_id"],
-            zone=c["zone"],
-            dimensions=Dimensions(**c["dimensions"]),
-            occupied_volume=c.get("occupied_volume", 0.0),
-            items=c.get("items", [])  # Load existing items from the database
+            container_id=c.container_id,
+            zone=c.zone,
+            dimensions=Dimensions(
+                width=c.width,
+                depth=c.depth,
+                height=c.height
+            )
         )
-        for c in containers_raw
+        for c in request.containers
     ]
 
     placed_items = []
-    for item_data in items:
+
+    for item_data in request.items:
         item = Item(
             item_id=item_data.item_id,
             name=item_data.name,
@@ -327,18 +432,13 @@ async def place_items_endpoint(request: PlacementRequest):
 
         try:
             item = placement_service.place_item(item, containers)
-            placed_items.append(item.model_dump())  # <-- Position is still a Pydantic model here
+            placed_items.append(item.model_dump())
 
-            # Find the container the item was placed into
-            container = next(
-                (cont for cont in containers if cont.container_id == item.container_id),
-                None
-            )
+            container = next((c for c in containers if c.container_id == item.container_id), None)
             if container:
-                # Append item details to the container's items list
                 item_info = {
                     "item_id": item.item_id,
-                    "position": item.position.model_dump(),  # Correct: dict
+                    "position": item.position.model_dump() if item.position else None,
                     "dimensions": {
                         "width": item.dimensions.width,
                         "depth": item.dimensions.depth,
@@ -350,50 +450,15 @@ async def place_items_endpoint(request: PlacementRequest):
                     "usage_limit": item.usage_limit
                 }
                 container.items.append(item_info)
-        except ValueError as e:
+        except ValueError:
             continue
-        
+
     if not placed_items:
         raise HTTPException(status_code=400, detail="No items could be placed.")
-    # print("this is placed items", placed_items)
-    # print('this is container item', containers)
-    # Prepare bulk operations
-    bulk_item_operations = [
-        UpdateOne(
-            {"item_id": placed_item["item_id"]},
-            {"$set": {
-                "container_id": placed_item["container_id"],
-                "position": placed_item["position"]  # Fix: Convert here
-            }}
-        )
-        for placed_item in placed_items
-    ]
-
-    bulk_container_operations = [
-        UpdateOne(
-            {"container_id": container.container_id},
-            {"$set": {
-                "occupied_volume": container.occupied_volume,
-                "items": container.items  # Update the items array
-            }}
-        )
-        for container in containers
-    ]
-
-
-    try:
-        if bulk_item_operations:
-            await db.items.bulk_write(bulk_item_operations, ordered=False)
-        
-        if bulk_container_operations:
-            await db.containers.bulk_write(bulk_container_operations, ordered=False)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Bulk update failed: {str(e)}"
-        )
 
     return {"success": True, "placements": placed_items}
+
+
 
 @router.post("/retrieve")
 async def retrieve_item_endpoint(body:ItemRetrieveRequest):
