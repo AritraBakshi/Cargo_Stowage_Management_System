@@ -150,7 +150,7 @@ Your solution should implement all the APIs described in the problem statement:
 - `n` = Number of containers  
 - `m` = Maximum number of items per container  
 - `V` = Number of candidate positions per container  
-  - Approximated by grid resolution: `(W - w + 1)(D - d + 1)(H - h + 1)`  
+-  Approximated by grid resolution: `(W - w + 1)(D - d + 1)(H - h + 1)`  
 - `b` = Number of blocking items (during retrieval)
 
 ---
