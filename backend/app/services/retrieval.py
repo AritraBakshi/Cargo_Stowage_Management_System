@@ -92,4 +92,4 @@ class RetrievalService:
                         print("rearranged items are ", retrieved)
                         return retrieved
 
-        raise HTTPException(status_code=404, detail="Item not found.")
+        raise HTTPException(status_code=404, detail="Item not found.2")

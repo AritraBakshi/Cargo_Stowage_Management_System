@@ -14,7 +14,7 @@ from app.models.items import Dimensions, Position, Item
 from datetime import datetime
 from pymongo import UpdateOne  # Required import
 from fastapi import Query
-
+from app.models.requestsschema import PlaceItemRequest
 
 placement_service = PlacementService()
 router = APIRouter()
@@ -198,6 +198,44 @@ async def get_items(item_id: Optional[str] = Query(None, description="The ID of 
         for i in items_raw
     ]
     return {"items": [item.model_dump() for item in items]}
+
+@router.get("/search")
+async def search_item(
+    item_id: Optional[str] = Query(None, alias="itemId"),
+    item_name: Optional[str] = Query(None, alias="itemName"),
+    user_id: Optional[str] = Query(None, alias="userId")  # Currently unused, can be used to filter further
+):
+    print("hit")
+    if not item_id and not item_name:
+        raise HTTPException(status_code=400, detail="Either itemId or itemName must be provided.")
+
+    query = {}
+    if item_id:
+        query["item_id"] = item_id
+    elif item_name:
+        query["name"] = item_name
+
+    item = await db.items.find_one(query)
+    if not item:
+        return {"success": True, "found": False, "item": None}
+
+    response_item = {
+        "itemId": item["item_id"],
+        "name": item["name"],
+        "containerId": item.get("container_id"),
+        "zone": item.get("preferred_zone"),
+        "position": {
+            "startCoordinates": item["position"]["start_coordinates"],
+            "endCoordinates": item["position"]["end_coordinates"]
+        } if "position" in item else None
+    }
+
+    return {
+        "success": True,
+        "found": True,
+        "item": response_item
+    }
+
 @router.get("/containers/{container_id}")
 async def get_container(container_id: str):
     # Fetch container from database
@@ -458,11 +496,11 @@ async def place_items_endpoint(request: PlacementRequest):
 
     return {"success": True, "placements": placed_items}
 
-
-
 @router.post("/retrieve")
 async def retrieve_item_endpoint(body:ItemRetrieveRequest):
-    item_id = body.item_id
+    item_id = body.itemId
+    # print("this is item id", item_id)
+    # print(await db.items.find_one({"item_id": "1"}))
     fetcheditem = await db.items.find_one({"item_id": item_id})
     # Fetch containers from MongoDB and convert to Container models
     containers_raw = await db.containers.find().to_list(length=1000)
@@ -533,6 +571,7 @@ async def retrieve_item_endpoint(body:ItemRetrieveRequest):
     return {"succeess":True,"message": f"Item {item_id} retrieved successfully."}
 
 
+
 @router.get("/waste/identify")
 async def identify_waste():
     now = datetime.utcnow()
@@ -597,9 +636,80 @@ async def identify_waste():
     }
 
 @router.post("/place")
-async def placeitem():
-    pass
+async def place_item(req: PlaceItemRequest):
+    # Step 1: Fetch item
+    item = await db.items.find_one({"item_id": req.itemId})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found.")
 
+    # Step 2: Fetch container
+    container = await db.containers.find_one({"container_id": req.containerId})
+    if not container:
+        raise HTTPException(status_code=404, detail="Container not found.")
+
+    # Step 3: Check for coordinate collisions
+    new_start = req.position.start_coordinates
+    new_end = req.position.end_coordinates
+
+    def is_overlap(pos1, pos2):
+        def overlaps_1d(a_start, a_end, b_start, b_end):
+            return not (a_end <= b_start or b_end <= a_start)
+
+        return (
+            overlaps_1d(pos1["start"]["width"], pos1["end"]["width"], pos2["start"]["width"], pos2["end"]["width"]) and
+            overlaps_1d(pos1["start"]["depth"], pos1["end"]["depth"], pos2["start"]["depth"], pos2["end"]["depth"]) and
+            overlaps_1d(pos1["start"]["height"], pos1["end"]["height"], pos2["start"]["height"], pos2["end"]["height"])
+        )
+
+    for existing_item in container.get("items", []):
+        if "position" not in existing_item:
+            continue
+        existing_pos = {
+            "start": existing_item["position"]["start_coordinates"],
+            "end": existing_item["position"]["end_coordinates"]
+        }
+        new_pos = {
+            "start": new_start.model_dump(),
+            "end": new_end.model_dump()
+        }
+        if is_overlap(existing_pos, new_pos):
+            raise HTTPException(status_code=400, detail="Coordinates already occupied. Could not place.")
+
+    # Step 4: Update item
+    await db.items.update_one(
+        {"item_id": req.itemId},
+        {
+            "$set": {
+                "container_id": req.containerId,
+                "position": {
+                    "start_coordinates": new_start.model_dump(),
+                    "end_coordinates": new_end.model_dump()
+                },
+                "last_placed_by": req.userId,
+                "last_placed_at": req.timestamp.isoformat()
+            }
+        }
+    )
+
+    # Step 5: Add to container's item list
+    await db.containers.update_one(
+        {"container_id": req.containerId},
+        {
+            "$push": {
+                "items": {
+                    "item_id": req.itemId,
+                    "position": {
+                        "start_coordinates": new_start.model_dump(),
+                        "end_coordinates": new_end.model_dump()
+                    },
+                    "placed_by": req.userId,
+                    "timestamp": req.timestamp.isoformat()
+                }
+            }
+        }
+    )
+
+    return {"success": True, "message": "Item placed successfully."}
 
 from app.models.requestsschema import wasteretunrreq
 @router.post("/waste/return-plan")

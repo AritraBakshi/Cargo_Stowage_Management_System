@@ -5,8 +5,9 @@ from .container import Dimensions,ContainerRequest
 
 
 class ItemRetrieveRequest(BaseModel):
-    item_id: str
-
+    itemId: str
+    userId: Optional[str] =None
+    timestamp: Optional[datetime] = None  # Accepts ISO format timestamps
 
 class Position(BaseModel):
     #Position of an item within a container
