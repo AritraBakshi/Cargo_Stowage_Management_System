@@ -1,0 +1,31 @@
+Item ID,Name,Width (cm),Depth (cm),Height (cm),Mass (kg),Priority (1-100),Expiry Date (ISO Format),Usage Limit,Preferred Zone
+001,Oxygen Cylinder,9,32,97,27,52,2025-02-30,10 uses,Airlock
+002,Battery Pack,32,23,84,41,56,2026-09-14,10 uses,Medical Bay
+003,Oxygen Cylinder,43,45,75,25,15,N/A,,Engineering
+004,Tool Kit,5,8,65,41,100,abcd,uses unlimited,Medical Bay
+005,Medical Supplies,22,6,51,17,47,2026-09-14,5 uses,Medical Bay
+006,First Aid Kit,13,10,91,22,87,2025-02-30,5 uses,Engineering
+007,Oxygen Cylinder,19,7,6,31,19,2026-09-14,many uses,Engineering
+008,First Aid Kit,34,35,12,25,98,,10 uses,Medical Bay
+009,Food Packet,18,25,41,21,78,2026-09-14,many uses,Engineering
+010,Battery Pack,25,33,88,37,71,abcd,30 uses,Engineering
+011,Battery Pack,38,15,79,17,70,2026-09-14,30 uses,Medical Bay
+012,Tool Kit,14,39,51,36,68,,5 uses,Crew Quarters
+013,Food Packet,37,33,58,28,20,abcd,,Medical Bay
+014,Tool Kit,9,39,27,50,50,,many uses,Airlock
+015,Tool Kit,35,48,36,41,48,abcd,5 uses,Medical Bay
+016,Battery Pack,50,19,93,50,41,,5 uses,Cargo Hold
+017,Medical Supplies,43,38,39,19,45,abcd,uses unlimited,Command Center
+018,Tool Kit,7,34,37,27,10,N/A,uses unlimited,Command Center
+019,Battery Pack,9,22,8,44,37,,5 uses,Crew Quarters
+020,Oxygen Cylinder,39,36,53,34,16,,uses unlimited,Command Center
+021,First Aid Kit,34,30,65,10,97,2025-02-30,,Command Center
+022,Battery Pack,13,30,28,20,88,,30 uses,Cargo Hold
+023,Food Packet,46,20,63,13,100,2026-09-14,uses unlimited,Engineering
+024,Battery Pack,33,33,94,48,71,abcd,,Crew Quarters
+025,Medical Supplies,29,13,73,14,82,abcd,uses unlimited,Airlock
+026,Oxygen Cylinder,44,7,41,36,30,2026-09-14,uses unlimited,Crew Quarters
+027,Tool Kit,17,32,37,34,83,N/A,10 uses,Engineering
+028,Medical Supplies,43,11,42,14,1,,many uses,Airlock
+029,Battery Pack,40,39,6,2,8,abcd,uses unlimited,Crew Quarters
+030,Oxygen Cylinder,21,25,18,25,93,2026-09-14,uses unlimited,Medical Bay
