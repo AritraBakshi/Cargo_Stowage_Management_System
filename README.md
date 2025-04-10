@@ -132,3 +132,17 @@ Your solution should implement all the APIs described in the problem statement:
 - [x] Place API
 - [x] Waste Management APIs
 - [x] Import/Export APIs
+
+## 📊 Time Complexity Summary of Core Algorithms
+
+| Service / Module        | Time Complexity              | Worst Case Scenario Description                          |
+|-------------------------|------------------------------|----------------------------------------------------------|
+| **Placement**           | `O(n log n + n * V * m)`     | Sorting containers + Brute-force bin-packing per item    |
+| **Bin Packing**         | `O(V * m)`                   | Tries all positions (1cm granularity) × overlap checks   |
+| **Retrieval**           | `O(n * m + b²)`              | Linear search + rearranging `b` blocking items           |
+| **Waste Management**    | `O(n * m)`                   | Scan each item in every container for expiry/overuse     |
+| **Return (Waste Move)** | `O(n * m²)`                  | Partition + re-packing each container (naive)            |
+
+---
+
+
