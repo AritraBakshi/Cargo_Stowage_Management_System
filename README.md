@@ -126,7 +126,7 @@ This will fetch the item
 
 Your solution should implement all the APIs described in the problem statement:
 
-- [x] Placement API (Sample provided. Use your own code instead.)
+- [x] Placement API
 - [x] Search API
 - [x] Retrieve API
 - [x] Place API
