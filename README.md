@@ -133,7 +133,7 @@ Your solution should implement all the APIs described in the problem statement:
 - [x] Waste Management APIs
 - [x] Import/Export APIs
 
-## 📊 Time Complexity Summary of Core Algorithms
+##📊 Time Complexity Summary of Core Algorithms
 
 | Service / Module        | Time Complexity              | Worst Case Scenario Description                          |
 |-------------------------|------------------------------|----------------------------------------------------------|
@@ -145,4 +145,13 @@ Your solution should implement all the APIs described in the problem statement:
 
 ---
 
+## Variable Definitions
+
+- `n` = Number of containers  
+- `m` = Maximum number of items per container  
+- `V` = Number of candidate positions per container  
+  - Approximated by grid resolution: `(W - w + 1)(D - d + 1)(H - h + 1)`  
+- `b` = Number of blocking items (during retrieval)
+
+---
 
