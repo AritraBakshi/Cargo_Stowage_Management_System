@@ -133,7 +133,7 @@ Your solution should implement all the APIs described in the problem statement:
 - [x] Waste Management APIs
 - [x] Import/Export APIs
 
-##📊 Time Complexity Summary of Core Algorithms
+## Time Complexity Summary of Core Algorithms
 
 | Service / Module        | Time Complexity              | Worst Case Scenario Description                          |
 |-------------------------|------------------------------|----------------------------------------------------------|
