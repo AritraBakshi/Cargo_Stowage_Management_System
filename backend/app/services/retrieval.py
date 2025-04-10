@@ -84,6 +84,7 @@ class RetrievalService:
                     if self.is_accessible(item, container):
                         # print("item is accesible",item)
                         print("hello")
+                        print("item is ", item)
                         item["usage_limit"] = int(item["usage_limit"]) - 1
                         print("new usage limit is ", item["usage_limit"])
                         return item
