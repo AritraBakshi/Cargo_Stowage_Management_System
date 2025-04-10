@@ -17,6 +17,7 @@ from pymongo import UpdateOne  # Required import
 from fastapi import Query
 from app.models.requestsschema import PlaceItemRequest
 from app.models.log import LogModel
+from app.models.requestsschema import wasteretunrreq
 
 
 async def log_action(user_id: Optional[str], action_type: str, item_id: str, details: Dict[str, Optional[str]] = {}):
@@ -29,7 +30,7 @@ async def log_action(user_id: Optional[str], action_type: str, item_id: str, det
     )
     await db.logs.insert_one(log.model_dump())
 
-    
+
 placement_service = PlacementService()
 router = APIRouter()
 
@@ -838,7 +839,6 @@ async def place_item(req: PlaceItemRequest):
     return {"success": True, "message": "Item placed successfully."}
 
 
-from app.models.requestsschema import wasteretunrreq
 
 @router.post("/waste/return-plan")
 async def returnplan(body: wasteretunrreq):
@@ -931,12 +931,7 @@ async def returnplan(body: wasteretunrreq):
     }
 
 
-from fastapi import APIRouter, HTTPException, Query
-from typing import Optional, List
-from datetime import datetime
-from models.log import LogModel
 
-router = APIRouter()
 
 @router.get("/logs", response_model=List[LogModel])
 async def get_logs(
