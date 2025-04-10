@@ -155,7 +155,7 @@ Your solution should implement all the APIs described in the problem statement:
 
 ---
 
-## 🧨 Worst Case Scenarios
+## Worst Case Scenarios
 
 - **Placement & Bin Packing:**  
   - Container is nearly full → all positions must be tested.
