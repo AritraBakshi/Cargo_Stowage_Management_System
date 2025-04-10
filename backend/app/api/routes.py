@@ -5,7 +5,7 @@ from datetime import datetime
 from database import db
 from io import StringIO
 from typing import List, Optional
-from app.models.items import ItemData,ItemRetrieveRequest
+from app.models.items import ItemData,ItemRetrieveRequest, PlacementRequest
 from app.models.container import Container
 from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
@@ -294,7 +294,8 @@ async def get_container(container_id: str):
 #     return {"success":True,"placements":placed_items}
 
 @router.post("/placement")
-async def place_items_endpoint(items: List[ItemData]):
+async def place_items_endpoint(request: PlacementRequest):
+    items = request.items
     containers_raw = await db.containers.find().to_list(length=1000)
     containers: List[Container] = [
         Container(

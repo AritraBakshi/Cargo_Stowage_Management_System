@@ -56,3 +56,8 @@ class ItemData(BaseModel):
     expiry_date: Optional[str] = None
     usage_limit: int
     preferred_zone: str
+
+
+
+class PlacementRequest(BaseModel):
+    items: List[ItemData]
