@@ -12,12 +12,39 @@ from app.models.container import Container
 from app.services.placement import PlacementService
 from app.services.retrieval import RetrievalService
 from app.models.items import Dimensions, Position, Item
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo import UpdateOne  # Required import
 from fastapi import Query
 from app.models.requestsschema import PlaceItemRequest
 from app.models.log import LogModel
 from app.models.requestsschema import wasteretunrreq
+from app.services.timesim import TimeSimulator
+
+#Time Simulation Part : 
+@router.post("/timesim")
+async def simulate_time(
+    request: dict = Body(...)
+):
+    try:
+        # Parse request
+        num_days = request.get("numOfDays")
+        to_timestamp = request.get("toTimestamp")
+        items_per_day = request.get("itemsToBeUsedPerDay", [])
+
+        # Load containers and items from DB (replace with real DB query later)
+        containers = await load_mock_data()
+
+        sim = TimeSimulator(containers)
+        result = sim.simulate_time_progression(
+            num_days=num_days,
+            to_timestamp=to_timestamp,
+            items_to_use_daily=items_per_day
+        )
+
+        return result
+
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 async def log_action(user_id: Optional[str], action_type: str, item_id: str, details: Dict[str, Optional[str]] = {}):
