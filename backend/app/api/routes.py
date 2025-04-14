@@ -31,8 +31,8 @@ async def simulate_time(
         to_timestamp = request.get("toTimestamp")
         items_per_day = request.get("itemsToBeUsedPerDay", [])
 
-        # Load containers and items from DB (replace with real DB query later)
-        containers = await load_mock_data()
+        # Load containers and items from DB 
+        containers = Container
 
         sim = TimeSimulator(containers)
         result = sim.simulate_time_progression(
