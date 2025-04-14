@@ -7,14 +7,9 @@ import itertools
 # (In a full system, you'd track this in the Container object or DB)
 container_occupancy = {}
 
-# Modified rotate_dimensions function
 def rotate_dimensions(dimensions: Dimensions):
     return [
-        Dimensions(
-            width=dims[0],
-            depth=dims[1],
-            height=dims[2]
-        )
+        Dimensions(*dims)
         for dims in set(itertools.permutations([
             dimensions.width,
             dimensions.depth,
@@ -38,23 +33,9 @@ def find_position_for_item(item: Item, container: Container) -> Optional[Positio
         for x in range(0, max_x):
             for y in range(0, max_y):
                 for z in range(0, max_z):
-                    # candidate = Position(
-                    #     start_coordinates=Dimensions(x, y, z),
-                    #     end_coordinates=Dimensions(x + dims.width, y + dims.depth, z + dims.height)
-                    # )
-
                     candidate = Position(
-                            start_coordinates=Dimensions(
-                                width=x,
-                                depth=y,
-                                height=z
-                                 
-                            ),
-                            end_coordinates=Dimensions(
-                                width=x + dims.width,
-                                depth=y + dims.depth,
-                                height=z + dims.height
-                            )
+                        start_coordinates=Dimensions(x, y, z),
+                        end_coordinates=Dimensions(x + dims.width, y + dims.depth, z + dims.height)
                     )
 
                     if not any(overlaps(candidate, occ) for occ in occupied):

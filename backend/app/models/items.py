@@ -1,8 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 from datetime import datetime
-from .container import Dimensions
+from .container import Dimensions,ContainerRequest
 
+
+class ItemRetrieveRequest(BaseModel):
+    itemId: str
+    userId: Optional[str] =None
+    timestamp: Optional[datetime] = None  # Accepts ISO format timestamps
 
 class Position(BaseModel):
     #Position of an item within a container
@@ -17,10 +22,11 @@ class Item(BaseModel):
     mass: float
     priority: int
     expiry_date: Optional[datetime] = None
-    usage_limit: int
+    usage_limit: Optional[int]
     usage_count: int = 0
     preferred_zone: str
     container_id: Optional[str] = None
+    # container_id: str
     position: Optional[Position] = None
     is_waste: bool = False
     waste_reason: Optional[str] = None
@@ -40,8 +46,7 @@ class ItemInDB(Item):
 
 
 class ItemData(BaseModel):
-    #Model for creating an item
-    item_id: str
+    item_id: str = Field(..., alias="itemId")
     name: str
     width: float
     depth: float
@@ -49,5 +54,13 @@ class ItemData(BaseModel):
     mass: float
     priority: int
     expiry_date: Optional[str] = None
-    usage_limit: int
-    preferred_zone: str
+    usage_limit: Optional[int] = Field(default=None, alias="usageLimit")
+    preferred_zone: str = Field(..., alias="preferredZone")
+
+    class Config:
+        validate_by_name = True
+        populate_by_name = True  # Required for Pydantic v2
+
+class PlacementRequest(BaseModel):
+    items: list[ItemData]
+    containers: List[ContainerRequest]
