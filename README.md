@@ -132,6 +132,7 @@ Your solution should implement all the APIs described in the problem statement:
 - [x] Place API
 - [x] Waste Management APIs
 - [x] Import/Export APIs
+- [x] Time Simulation APIs
 
 ## Time Complexity Summary of Core Algorithms
 
