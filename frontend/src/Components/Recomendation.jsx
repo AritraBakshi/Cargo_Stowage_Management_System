@@ -4,6 +4,7 @@ import { blink } from "../Baselink";
 import Papa from "papaparse";
 import { FaUpload, FaEye, FaEyeSlash, FaFileCsv } from "react-icons/fa";
 import ItemVisualizer3D from "./Utility/ItemVisualizer";
+import { Loader } from "lucide-react";
 
 const defaultItem = {
     item_id: "",
@@ -39,6 +40,8 @@ export default function Recommendation() {
     const [containerFileName, setContainerFileName] = useState("");
     const [itemFileName, setItemFileName] = useState("");
 
+
+    const [updateStatus, setUpdateStatus] = useState(false);
     const handleItemChange = (index, field, value) => {
         const updated = [...items];
         updated[index][field] = value;
@@ -54,7 +57,7 @@ export default function Recommendation() {
     const handleItemsCSVUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-    
+
         setItemFileName(file.name);
         Papa.parse(file, {
             header: true,
@@ -86,7 +89,7 @@ export default function Recommendation() {
             complete: function (results) {
                 const parsed = results.data;
                 const newItems = [];
-    
+
                 parsed.forEach((row) => {
                     if (row.item_id) {
                         newItems.push({
@@ -104,7 +107,7 @@ export default function Recommendation() {
                         });
                     }
                 });
-    
+
                 if (newItems.length > 0) {
                     setItems(newItems);
                     setItemPreview(parsed);
@@ -122,11 +125,11 @@ export default function Recommendation() {
             },
         });
     };
-    
+
     const handleContainersCSVUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-    
+
         setContainerFileName(file.name);
         Papa.parse(file, {
             header: true,
@@ -152,7 +155,7 @@ export default function Recommendation() {
             complete: function (results) {
                 const parsed = results.data;
                 const newContainers = [];
-    
+
                 parsed.forEach((row) => {
                     if (row.container_id) {
                         newContainers.push({
@@ -164,7 +167,7 @@ export default function Recommendation() {
                         });
                     }
                 });
-    
+
                 if (newContainers.length > 0) {
                     setContainers(newContainers);
                     setContainerPreview(parsed);
@@ -190,6 +193,7 @@ export default function Recommendation() {
     const handleDeleteContainer = (index) => setContainers(containers.filter((_, i) => i !== index));
 
     const handleSubmit = async () => {
+        setUpdateStatus(prev => !prev);
         try {
             const payload = {
                 containers: containers.map(c => ({
@@ -201,7 +205,7 @@ export default function Recommendation() {
                 })),
                 items
             };
-            
+
             console.log("Payload:", payload);
             const response = await axios.post(`${blink}/placement`, payload, {
                 headers: {
@@ -211,10 +215,13 @@ export default function Recommendation() {
 
             console.log("Response:", response.data);
             setPlacements(response.data.placements || []);
+            setStatus("Items placed successfully.");
+            setUpdateStatus(false);
         } catch (err) {
             console.error(err);
             setStatus("Failed to place items.");
             setPlacements([]);
+            setUpdateStatus(false);
         }
     };
 
@@ -313,147 +320,160 @@ export default function Recommendation() {
                 </div>
             </section>
 
-            {/* CONTAINER CSV UPLOAD AND PREVIEW */}
-            <section className="mb-10">
-                <h2 className="text-xl font-semibold mb-4 text-center">Upload Containers CSV</h2>
-                <div className="flex justify-center items-center gap-4 mb-4">
-                    <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                        <FaUpload />
-                        Choose CSV File
-                        <input type="file" accept=".csv" onChange={handleContainersCSVUpload} className="hidden" />
-                    </label>
-                    {containerPreview.length > 0 && (
-                        <button
-                            onClick={() => setShowContainerPreview(!showContainerPreview)}
-                            className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
-                        >
-                            {showContainerPreview ? <FaEyeSlash /> : <FaEye />}
-                            {showContainerPreview ? "Hide Preview" : "Show Preview"}
-                        </button>
+            <div className="flex flex-row justify-center items-start gap-6 mb-6 flex-wrap">
+                {/* CONTAINER CSV UPLOAD AND PREVIEW */}
+                <section className="w-full sm:w-1/2 lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-2xl font-semibold mb-4 text-center">Upload Containers CSV</h2>
+                    <div className="flex justify-center items-center gap-6 mb-4">
+                        <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                            <FaUpload />
+                            Choose CSV File
+                            <input type="file" accept=".csv" onChange={handleContainersCSVUpload} className="hidden" />
+                        </label>
+                        {containerPreview.length > 0 && (
+                            <button
+                                onClick={() => setShowContainerPreview(!showContainerPreview)}
+                                className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+                            >
+                                {showContainerPreview ? <FaEyeSlash /> : <FaEye />}
+                                {showContainerPreview ? "Hide Preview" : "Show Preview"}
+                            </button>
+                        )}
+                    </div>
+                    {containerFileName && (
+                        <p className="text-center text-sm text-gray-600 mb-3">Uploaded: {containerFileName}</p>
                     )}
-                </div>
-                {containerFileName && (
-                    <p className="text-center text-sm text-gray-600 mb-2">Uploaded: {containerFileName}</p>
-                )}
-                {showContainerPreview && containerPreview.length > 0 && (
-                    <div className="max-w-5xl mx-auto bg-white p-4 rounded shadow max-h-96 overflow-y-auto">
-                        <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-                            <FaFileCsv /> Containers Preview
-                        </h3>
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-200 sticky top-0">
-                                        {Object.keys(containerPreview[0]).map((key) => (
-                                            <th key={key} className="border px-4 py-2 text-sm font-semibold">{key}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {containerPreview.map((row, idx) => (
-                                        <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
-                                            {Object.values(row).map((value, i) => (
-                                                <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                    {showContainerPreview && containerPreview.length > 0 && (
+                        <div className="overflow-hidden max-h-96 overflow-y-auto bg-gray-50 p-4 rounded-lg shadow-md">
+                            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                                <FaFileCsv /> Containers Preview
+                            </h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full table-auto border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-200 sticky top-0">
+                                            {Object.keys(containerPreview[0]).map((key) => (
+                                                <th key={key} className="border px-4 py-3 text-sm font-semibold text-left">{key}</th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {containerPreview.map((row, idx) => (
+                                            <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
+                                                {Object.values(row).map((value, i) => (
+                                                    <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </section>
+                    )}
+                </section>
 
-            {/* ITEM CSV UPLOAD AND PREVIEW */}
-            <section className="mb-10">
-                <h2 className="text-xl font-semibold mb-4 text-center">Upload Items CSV</h2>
-                <div className="flex justify-center items-center gap-4 mb-4">
-                    <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                        <FaUpload />
-                        Choose CSV File
-                        <input type="file" accept=".csv" onChange={handleItemsCSVUpload} className="hidden" />
-                    </label>
-                    {itemPreview.length > 0 && (
-                        <button
-                            onClick={() => setShowItemPreview(!showItemPreview)}
-                            className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
-                        >
-                            {showItemPreview ? <FaEyeSlash /> : <FaEye />}
-                            {showItemPreview ? "Hide Preview" : "Show Preview"}
-                        </button>
+                {/* ITEM CSV UPLOAD AND PREVIEW */}
+                <section className="w-full sm:w-1/2 lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+                    <h2 className="text-2xl font-semibold mb-4 text-center">Upload Items CSV</h2>
+                    <div className="flex justify-center items-center gap-6 mb-4">
+                        <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                            <FaUpload />
+                            Choose CSV File
+                            <input type="file" accept=".csv" onChange={handleItemsCSVUpload} className="hidden" />
+                        </label>
+                        {itemPreview.length > 0 && (
+                            <button
+                                onClick={() => setShowItemPreview(!showItemPreview)}
+                                className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+                            >
+                                {showItemPreview ? <FaEyeSlash /> : <FaEye />}
+                                {showItemPreview ? "Hide Preview" : "Show Preview"}
+                            </button>
+                        )}
+                    </div>
+                    {itemFileName && (
+                        <p className="text-center text-sm text-gray-600 mb-3">Uploaded: {itemFileName}</p>
                     )}
-                </div>
-                {itemFileName && (
-                    <p className="text-center text-sm text-gray-600 mb-2">Uploaded: {itemFileName}</p>
-                )}
-                {showItemPreview && itemPreview.length > 0 && (
-                    <div className="max-w-6xl mx-auto bg-white p-4 rounded shadow max-h-96 overflow-y-auto">
-                        <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
-                            <FaFileCsv /> Items Preview
-                        </h3>
-                        <div className="overflow-x-auto">
-                            <table className="w-full border-collapse">
-                                <thead>
-                                    <tr className="bg-gray-200 sticky top-0">
-                                        {Object.keys(itemPreview[0]).map((key) => (
-                                            <th key={key} className="border px-4 py-2 text-sm font-semibold">{key}</th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {itemPreview.map((row, idx) => (
-                                        <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
-                                            {Object.values(row).map((value, i) => (
-                                                <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                    {showItemPreview && itemPreview.length > 0 && (
+                        <div className="overflow-hidden max-h-96 overflow-y-auto bg-gray-50 p-4 rounded-lg shadow-md">
+                            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                                <FaFileCsv /> Items Preview
+                            </h3>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full table-auto border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-200 sticky top-0">
+                                            {Object.keys(itemPreview[0]).map((key) => (
+                                                <th key={key} className="border px-4 py-3 text-sm font-semibold text-left">{key}</th>
                                             ))}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {itemPreview.map((row, idx) => (
+                                            <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
+                                                {Object.values(row).map((value, i) => (
+                                                    <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </section>
+                    )}
+                </section>
+            </div>
+
+
 
             {/* SUBMIT */}
             <div className="text-center mb-10">
+                {updateStatus ? (
+                    <div className="flex justify-center items-center gap-2">
+                        <span>Loading...</span>
+                        <Loader size={30}/>
+
+                    </div>
+                ) :(
+
                 <button onClick={handleSubmit}
                     className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded text-lg">
                     Submit for Placement
                 </button>
+                ) }
                 {status && <p className="mt-4 text-lg text-blue-700 font-medium">{status}</p>}
             </div>
 
             {/* PLACEMENTS RESULT */}
             {placements.length > 0 && (
                 <>
-                <section className="bg-white p-6 rounded shadow">
-                    <h2 className="text-xl font-semibold mb-4 text-center">Item Placements</h2>
-                    <ul className="space-y-4">
-                        {placements.map((placement, idx) => (
-                            <li key={idx} className="border p-4 rounded">
-                                <p className="font-medium">{placement.name} (ID: {placement.item_id})</p>
-                                <p>Container ID: <span className="font-mono">{placement.container_id}</span></p>
-                                <p>Position:</p>
-                                <ul className="ml-4 text-sm">
-                                    <li>
-                                        Start → Width: {placement.position.start_coordinates.width}, Depth: {placement.position.start_coordinates.depth}, Height: {placement.position.start_coordinates.height}
-                                    </li>
-                                    <li>
-                                        End → Width: {placement.position.end_coordinates.width}, Depth: {placement.position.end_coordinates.depth}, Height: {placement.position.end_coordinates.height}
-                                    </li>
-                                </ul>
-                                {placement.is_waste && (
-                                    <p className="text-red-500 font-semibold mt-1">
-                                        ⚠️ Marked as waste: {placement.waste_reason || "No reason given"}
-                                    </p>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-                <ItemVisualizer3D items={placements} />
-                
+                    <section className="bg-white p-6 rounded shadow">
+                        <h2 className="text-xl font-semibold mb-4 text-center">Item Placements</h2>
+                        <ul className="space-y-4">
+                            {placements.map((placement, idx) => (
+                                <li key={idx} className="border p-4 rounded">
+                                    <p className="font-medium">{placement.name} (ID: {placement.item_id})</p>
+                                    <p>Container ID: <span className="font-mono">{placement.container_id}</span></p>
+                                    <p>Position:</p>
+                                    <ul className="ml-4 text-sm">
+                                        <li>
+                                            Start → Width: {placement.position.start_coordinates.width}, Depth: {placement.position.start_coordinates.depth}, Height: {placement.position.start_coordinates.height}
+                                        </li>
+                                        <li>
+                                            End → Width: {placement.position.end_coordinates.width}, Depth: {placement.position.end_coordinates.depth}, Height: {placement.position.end_coordinates.height}
+                                        </li>
+                                    </ul>
+                                    {placement.is_waste && (
+                                        <p className="text-red-500 font-semibold mt-1">
+                                            ⚠️ Marked as waste: {placement.waste_reason || "No reason given"}
+                                        </p>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                    <ItemVisualizer3D items={placements} />
+
                 </>
             )}
         </div>
