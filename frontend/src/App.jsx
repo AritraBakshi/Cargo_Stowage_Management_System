@@ -6,10 +6,11 @@ import Recommendation from './Components/Recomendation'
 import SearchRetrieve from './Components/SearchComp'
 import ContainerDetails from './Components/Containerdetails'
 import WasteManagement from './Components/Wastemanagement'
-import ItemPlacement from './Components/Placement'
+import ItemPlacementWithContainerDetails from './Components/Placement'
 function App() {
   return (
     <>
+
         <FloatingNavbar/>
       <Routes>
         <Route path='/' element={<HomePage/>} />
@@ -17,7 +18,7 @@ function App() {
         <Route path='/retrieve' element={<SearchRetrieve/>} />
         <Route path='/details' element={<ContainerDetails/>} />
         <Route path='/waste' element={<WasteManagement/>} />
-        <Route path='/placement' element={<ItemPlacement/>} />
+        <Route path='/placement' element={<ItemPlacementWithContainerDetails/>} />
       </Routes>
     </>
   )

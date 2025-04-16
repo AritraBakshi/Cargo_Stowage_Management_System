@@ -56,6 +56,8 @@ export default function Recommendation() {
 
             <div className="space-y-4">
                 {items.map((item, idx) => (
+                    <div className="flex justify-center">
+
                     <div
                         key={idx}
                         className="flex flex-wrap items-center bg-white rounded-lg shadow-sm p-3 hover:bg-gray-100 relative group"
@@ -147,6 +149,7 @@ export default function Recommendation() {
                         >
                             Delete
                         </button>
+                    </div>
                     </div>
                 ))}
             </div>

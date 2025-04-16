@@ -1041,6 +1041,7 @@ async def returnplan(body: wasteretunrreq):
 
 @router.post("/batch-place")
 async def batch_place_items(req: BatchPlaceItemRequest):
+    print(req.items[0].itemId)
     placed_items = []
     errors = []
 
@@ -1057,8 +1058,12 @@ async def batch_place_items(req: BatchPlaceItemRequest):
 
     for item_req in req.items:
         try:
+            print("this is under loop", item_req.itemId)
             # Step 1: Fetch item
-            item = await db.items.find_one({"item_id": item_req.itemId})
+            item_id_normalized = str(int(item_req.itemId))  # converts '002' -> '2'
+            item = await db.items.find_one({"item_id": item_id_normalized})
+            print("this is underllop ", item)
+         
             if not item:
                 raise HTTPException(status_code=404, detail=f"Item {item_req.itemId} not found.")
 

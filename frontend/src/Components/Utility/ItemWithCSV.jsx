@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Papa from "papaparse";
-import Container3DView from "../Components/Utility/ContainerGraph";
+import Container3DView from "./ContainerGraph";
 export default function ItemPlacementWithContainerDetailsCSV() {
     const [formData, setFormData] = useState({
         itemId: "",
@@ -14,9 +14,6 @@ export default function ItemPlacementWithContainerDetailsCSV() {
     const [status, setStatus] = useState(null);
     const [batchStatus, setBatchStatus] = useState(null);
     const [csvFile, setCsvFile] = useState(null);
-
-    const [csvPreview, setCsvPreview] = useState([]);
-
 
     const [containerIdQuery, setContainerIdQuery] = useState("");
     const [containerDetails, setContainerDetails] = useState(null);
@@ -82,19 +79,10 @@ export default function ItemPlacementWithContainerDetailsCSV() {
     const handleCsvUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-          setCsvFile(file);
-      
-          // Parse and preview top 5 rows
-          Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => {
-              setCsvPreview(results.data.slice(0, 5)); // Limit to 5 rows
-            },
-          });
+            setCsvFile(file);
         }
-      };
-      
+    };
+
     const handleCsvSubmit = async (e) => {
         e.preventDefault();
         if (!csvFile) {
@@ -131,7 +119,6 @@ export default function ItemPlacementWithContainerDetailsCSV() {
 
                 try {
                     const res = await axios.post("http://localhost:8000/api/batch-place", payload);
-                    console.log("Batch placement response:", res.data);
                     setBatchStatus(res.data.success ? "success" : `failed: ${res.data.message}`);
                 } catch (error) {
                     console.error("Batch placement error:", error);
@@ -146,13 +133,11 @@ export default function ItemPlacementWithContainerDetailsCSV() {
     };
 
     return (
-<div className="w-full mt-20 min-h-screen px-6 py-10 bg-gray-50 text-gray-800">
-  <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 h-full">
-    {/* Left Panel - Placement + CSV */}
-    <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col h-full">
-      <h2 className="text-2xl font-bold mb-6">Place an Item</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="max-w-5xl mx-auto mt-32 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Item Placement Form */}
+            <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-bold mb-4">Place an Item</h2>
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <input
                         type="text"
                         name="itemId"
@@ -238,98 +223,96 @@ export default function ItemPlacementWithContainerDetailsCSV() {
                     )}
                 </form>
 
-      <div className="mt-8 border-t pt-6 flex-grow">
-        <h2 className="text-xl font-bold mb-4">Batch Place Items via CSV</h2>
-        <form onSubmit={handleCsvSubmit} className="space-y-4">
-          <input type="file" accept=".csv" onChange={handleCsvUpload} className="w-full border p-2 rounded" />
-          <button type="submit" className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
-            Upload and Place Items
-          </button>
-        </form>
-
-        {/* Status messages */}
-        {batchStatus === "loading" && <p className="text-blue-500 mt-2">Processing batch placement...</p>}
-        {batchStatus === "success" && <p className="text-green-600 mt-2">Batch placement successful!</p>}
-        {(batchStatus?.startsWith("error") || batchStatus?.startsWith("failed")) && (
-          <p className="text-red-600 mt-2">{batchStatus}</p>
-        )}
-
-        {/* CSV Preview */}
-        {csvPreview.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-md font-semibold mb-2">CSV Preview (first 5 rows)</h3>
-            <div className="overflow-auto max-h-60 border rounded text-xs">
-              <table className="w-full table-auto border border-gray-300">
-                <thead className="bg-gray-100">
-                  <tr>
-                    {Object.keys(csvPreview[0]).map((key, index) => (
-                      <th key={index} className="border px-2 py-1">{key}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {csvPreview.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {Object.values(row).map((val, colIndex) => (
-                        <td key={colIndex} className="border px-2 py-1">{val}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                {/* CSV Batch Placement */}
+                <div className="mt-6 border-t pt-4">
+                    <h2 className="text-xl font-bold mb-4">Batch Place Items via CSV</h2>
+                    <form onSubmit={handleCsvSubmit} className="space-y-4">
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleCsvUpload}
+                            className="w-full border p-2 rounded"
+                        />
+                        <button
+                            type="submit"
+                            className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+                        >
+                            Upload and Place Items
+                        </button>
+                        {batchStatus === "loading" && (
+                            <p className="text-blue-500 mt-2">Processing batch placement...</p>
+                        )}
+                        {batchStatus === "success" && (
+                            <p className="text-green-600 mt-2">Batch placement successful!</p>
+                        )}
+                        {batchStatus && batchStatus.startsWith("error") && (
+                            <p className="text-red-600 mt-2">{batchStatus}</p>
+                        )}
+                        {batchStatus && batchStatus.startsWith("failed") && (
+                            <p className="text-red-600 mt-2">{batchStatus}</p>
+                        )}
+                    </form>
+                </div>
             </div>
-          </div>
-        )}
-      </div>
-    </div>
 
-    {/* Right Panel - Container Details */}
-    <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col h-full">
-      <h2 className="text-2xl font-bold mb-6">Container Details</h2>
+            {/* Container Details Fetch */}
+            <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-bold mb-4">Container Details</h2>
+                <div className="flex space-x-2 mb-4">
+                    <input
+                        type="text"
+                        placeholder="Enter Container ID"
+                        className="w-full border p-2 rounded"
+                        value={containerIdQuery}
+                        onChange={(e) => setContainerIdQuery(e.target.value)}
+                    />
+                    <button
+                        onClick={fetchContainerDetails}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                        Get Info
+                    </button>
+                </div>
 
-      <div className="flex space-x-2 mb-4">
-        <input
-          type="text"
-          placeholder="Enter Container ID"
-          className="w-full border p-2 rounded"
-          value={containerIdQuery}
-          onChange={(e) => setContainerIdQuery(e.target.value)}
-        />
-        <button
-          onClick={fetchContainerDetails}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Get Info
-        </button>
-      </div>
+                {containerError && <p className="text-red-500">{containerError}</p>}
 
-      {containerError && <p className="text-red-600">{containerError}</p>}
+                {containerDetails && (
+                    <div className="text-sm space-y-2">
+                        <p><strong>Zone:</strong> {containerDetails.zone}</p>
+                        <p>
+                            <strong>Dimensions:</strong>{" "}
+                            {containerDetails.dimensions.width} × {containerDetails.dimensions.depth} ×{" "}
+                            {containerDetails.dimensions.height} cm
+                        </p>
+                        <p>
+                            <strong>Occupied Volume:</strong>{" "}
+                            {containerDetails.occupied_volume.toFixed(2)} cm³
+                        </p>
+                        <p>
+                            <strong>Items in Container:</strong> {containerDetails.items.length}
+                        </p>
 
-      {containerDetails && (
-        <div className="text-sm space-y-2 flex flex-col flex-grow">
-          <p><strong>Zone:</strong> {containerDetails.zone}</p>
-          <p><strong>Dimensions:</strong> {containerDetails.dimensions.width} × {containerDetails.dimensions.depth} × {containerDetails.dimensions.height} cm</p>
-          <p><strong>Occupied Volume:</strong> {containerDetails.occupied_volume.toFixed(2)} cm³</p>
-          <p><strong>Items in Container:</strong> {containerDetails.items.length}</p>
-
-          <div className="mt-2 max-h-40 overflow-y-auto border rounded p-2 flex-grow">
-            {containerDetails.items.map((item, idx) => (
-              <div key={idx} className="border-b py-1">
-                <p><strong>{item.name}</strong> (ID: {item.item_id})</p>
-                <p className="text-xs text-gray-600">Zone: {item.preferred_zone}, Priority: {item.priority}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6">
-            <h3 className="font-semibold text-sm mb-2">3D Container View</h3>
-            <Container3DView container={containerDetails} />
-          </div>
+                        <div className="mt-2 max-h-40 overflow-y-auto border rounded p-2">
+                            {containerDetails.items.map((item, idx) => (
+                                <div key={idx} className="border-b py-1">
+                                    <p>
+                                        <strong>{item.name}</strong> (ID: {item.item_id})
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                        Zone: {item.preferred_zone}, Priority: {item.priority}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        {containerDetails && (
+                            <div className="mt-4">
+                                <h3 className="font-semibold text-sm mb-1">3D Container View</h3>
+                                <Container3DView container={containerDetails} />
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
-      )}
-    </div>
-  </div>
-</div>
-
     );
 }
