@@ -124,7 +124,7 @@ This will fetch the item
 ```
 ## Features Implemented
 
-Your solution should implement all the APIs described in the problem statement:
+Our solution implements all the APIs described in the problem statement:
 
 - [x] Placement API
 - [x] Search API
@@ -132,6 +132,8 @@ Your solution should implement all the APIs described in the problem statement:
 - [x] Place API
 - [x] Waste Management APIs
 - [x] Import/Export APIs
+- [x] Logging APIs
+- [x] Time Simulation APIs
 
 ## Time Complexity Summary of Core Algorithms
 
