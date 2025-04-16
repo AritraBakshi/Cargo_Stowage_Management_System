@@ -1,6 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { blink } from "../Baselink";
+import Papa from "papaparse";
+import { FaUpload, FaEye, FaEyeSlash, FaFileCsv } from "react-icons/fa";
+import ItemVisualizer3D from "./Utility/ItemVisualizer";
 
 const defaultItem = {
     item_id: "",
@@ -16,169 +19,419 @@ const defaultItem = {
     preferred_zone: "",
 };
 
+const defaultContainer = {
+    container_id: "",
+    zone: "",
+    width: null,
+    depth: null,
+    height: null,
+};
+
 export default function Recommendation() {
+    const [containers, setContainers] = useState([{ ...defaultContainer }]);
     const [items, setItems] = useState([{ ...defaultItem }]);
     const [status, setStatus] = useState("");
     const [placements, setPlacements] = useState([]);
+    const [containerPreview, setContainerPreview] = useState([]);
+    const [itemPreview, setItemPreview] = useState([]);
+    const [showContainerPreview, setShowContainerPreview] = useState(false);
+    const [showItemPreview, setShowItemPreview] = useState(false);
+    const [containerFileName, setContainerFileName] = useState("");
+    const [itemFileName, setItemFileName] = useState("");
 
-    const handleChange = (index, field, value) => {
+    const handleItemChange = (index, field, value) => {
         const updated = [...items];
         updated[index][field] = value;
         setItems(updated);
     };
 
-    const handleAddItem = () => {
-        setItems([...items, { ...defaultItem }]);
+    const handleContainerChange = (index, field, value) => {
+        const updated = [...containers];
+        updated[index][field] = value;
+        setContainers(updated);
     };
 
-    const handleDeleteItem = (index) => {
-        const updated = items.filter((_, i) => i !== index);
-        setItems(updated);
+    const handleItemsCSVUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        setItemFileName(file.name);
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: (header) => {
+                // Normalize headers to match expected property names
+                const headerMap = {
+                    "Item ID": "item_id",
+                    "Name": "name",
+                    "Width (cm)": "width",
+                    "Depth (cm)": "depth",
+                    "Height (cm)": "height",
+                    "Mass (kg)": "mass",
+                    "Priority (1-100)": "priority",
+                    "Expiry Date (ISO Format)": "expiry_date",
+                    "Usage Limit": "usage_limit",
+                    "Preferred Zone": "preferred_zone",
+                    "Usage Count": "usage_count" // Optional, as it may not be in CSV
+                };
+                // Normalize header by removing extra spaces and matching case-insensitively
+                const normalized = header.trim().toLowerCase();
+                for (const [csvHeader, propName] of Object.entries(headerMap)) {
+                    if (csvHeader.toLowerCase() === normalized || normalized === propName) {
+                        return propName;
+                    }
+                }
+                return normalized.replace(/\s+/g, "_"); // Fallback: replace spaces with underscores
+            },
+            complete: function (results) {
+                const parsed = results.data;
+                const newItems = [];
+    
+                parsed.forEach((row) => {
+                    if (row.item_id) {
+                        newItems.push({
+                            item_id: row.item_id || "",
+                            name: row.name || "",
+                            width: parseFloat(row.width) || null,
+                            depth: parseFloat(row.depth) || null,
+                            height: parseFloat(row.height) || null,
+                            mass: parseFloat(row.mass) || null,
+                            priority: parseInt(row.priority) || null,
+                            expiry_date: row.expiry_date ? `${row.expiry_date}T00:00:00` : "",
+                            usage_limit: row.usage_limit ? parseInt(row.usage_limit.replace(" uses", "")) || null : null,
+                            usage_count: parseInt(row.usage_count) || null, // Handle missing usage_count
+                            preferred_zone: row.preferred_zone || "",
+                        });
+                    }
+                });
+    
+                if (newItems.length > 0) {
+                    setItems(newItems);
+                    setItemPreview(parsed);
+                    setShowItemPreview(true);
+                    setStatus("Items CSV uploaded successfully.");
+                } else {
+                    setStatus("No valid items found in CSV.");
+                }
+            },
+            error: function (error) {
+                console.error("Error parsing items CSV:", error);
+                setStatus("Failed to parse Items CSV.");
+                setItemPreview([]);
+                setShowItemPreview(false);
+            },
+        });
     };
+    
+    const handleContainersCSVUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        setContainerFileName(file.name);
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            transformHeader: (header) => {
+                // Normalize headers to match expected property names
+                const headerMap = {
+                    "Container ID": "container_id",
+                    "Zone": "zone",
+                    "Width(cm)": "width",
+                    "Depth(cm)": "depth",
+                    "Height(cm)": "height"
+                };
+                // Normalize header by removing extra spaces and matching case-insensitively
+                const normalized = header.trim().toLowerCase().replace(/\(cm\)/g, "");
+                for (const [csvHeader, propName] of Object.entries(headerMap)) {
+                    if (csvHeader.toLowerCase().replace(/\(cm\)/g, "") === normalized || normalized === propName) {
+                        return propName;
+                    }
+                }
+                return normalized.replace(/\s+/g, "_"); // Fallback: replace spaces with underscores
+            },
+            complete: function (results) {
+                const parsed = results.data;
+                const newContainers = [];
+    
+                parsed.forEach((row) => {
+                    if (row.container_id) {
+                        newContainers.push({
+                            container_id: row.container_id || "",
+                            zone: row.zone || "",
+                            width: parseFloat(row.width) || null,
+                            depth: parseFloat(row.depth) || null,
+                            height: parseFloat(row.height) || null,
+                        });
+                    }
+                });
+    
+                if (newContainers.length > 0) {
+                    setContainers(newContainers);
+                    setContainerPreview(parsed);
+                    setShowContainerPreview(true);
+                    setStatus("Containers CSV uploaded successfully.");
+                } else {
+                    setStatus("No valid containers found in CSV.");
+                }
+            },
+            error: function (error) {
+                console.error("Error parsing containers CSV:", error);
+                setStatus("Failed to parse Containers CSV.");
+                setContainerPreview([]);
+                setShowContainerPreview(false);
+            },
+        });
+    };
+
+    const handleAddItem = () => setItems([...items, { ...defaultItem }]);
+    const handleAddContainer = () => setContainers([...containers, { ...defaultContainer }]);
+
+    const handleDeleteItem = (index) => setItems(items.filter((_, i) => i !== index));
+    const handleDeleteContainer = (index) => setContainers(containers.filter((_, i) => i !== index));
 
     const handleSubmit = async () => {
         try {
-            const res = await axios.post(`${blink}/placement`, items);
-            console.log(res.data);
-            setStatus("Items submitted successfully!");
-            setPlacements(res.data.placements); // <-- Save placements
+            const payload = {
+                containers: containers.map(c => ({
+                    container_id: c.container_id,
+                    zone: c.zone,
+                    width: c.width,
+                    depth: c.depth,
+                    height: c.height
+                })),
+                items
+            };
+            
+            console.log("Payload:", payload);
+            const response = await axios.post(`${blink}/placement`, payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            console.log("Response:", response.data);
+            setPlacements(response.data.placements || []);
         } catch (err) {
             console.error(err);
-            setStatus("Submission failed!");
-            setPlacements([]); // clear placements if failed
+            setStatus("Failed to place items.");
+            setPlacements([]);
         }
     };
 
-
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <h1 className="text-2xl mt-24 font-bold mb-6 text-center">Item Placement Recomendation</h1>
+        <div className="min-h-screen bg-gray-100 p-6 pt-24">
+            <div className="mt-20"></div>
+            <h1 className="text-3xl font-bold text-center mb-8">Item Placement Recommendation</h1>
 
-            <div className="space-y-4">
-                {items.map((item, idx) => (
-                    <div className="flex justify-center">
-
-                    <div
-                        key={idx}
-                        className="flex flex-wrap items-center bg-white rounded-lg shadow-sm p-3 hover:bg-gray-100 relative group"
-                    >
-                        <div className="flex flex-wrap gap-3 w-full">
-                            <input
-                                type="text"
-                                placeholder="Item ID"
-                                value={item.item_id}
-                                onChange={(e) => handleChange(idx, "item_id", e.target.value)}
-                                className="input w-28 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                value={item.name}
-                                onChange={(e) => handleChange(idx, "name", e.target.value)}
-                                className="input w-36 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Width"
-                                value={item.width}
-                                onChange={(e) => handleChange(idx, "width", parseFloat(e.target.value))}
-                                className="input w-20 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Depth"
-                                value={item.depth}
-                                onChange={(e) => handleChange(idx, "depth", parseFloat(e.target.value))}
-                                className="input w-20 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Height"
-                                value={item.height}
-                                onChange={(e) => handleChange(idx, "height", parseFloat(e.target.value))}
-                                className="input w-20 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Mass"
-                                value={item.mass}
-                                onChange={(e) => handleChange(idx, "mass", parseFloat(e.target.value))}
-                                className="input w-24 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Priority"
-                                value={item.priority}
-                                onChange={(e) => handleChange(idx, "priority", parseInt(e.target.value))}
-                                className="input w-24 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="date"
-                                value={item.expiry_date?.split("T")[0] || ""}
-                                pplaceholder="Expiry Date"
-                                onChange={(e) => handleChange(idx, "expiry_date", `${e.target.value}T00:00:00`)}
-                                className="input w-40 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Limit"
-                                value={item.usage_limit}
-                                onChange={(e) => handleChange(idx, "usage_limit", parseInt(e.target.value))}
-                                className="input w-24 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Count"
-                                value={item.usage_count}
-                                onChange={(e) => handleChange(idx, "usage_count", parseInt(e.target.value))}
-                                className="input w-24 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Preffered1 Zone"
-                                value={item.preferred_zone}
-                                onChange={(e) => handleChange(idx, "preferred_zone", e.target.value)}
-                                className="input w-32 border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
+            {/* CONTAINERS SECTION */}
+            <section className="mb-10">
+                <h2 className="text-xl font-semibold mb-4 text-center">Container Details</h2>
+                {containers.map((container, idx) => (
+                    <div key={idx} className="flex justify-center">
+                        <div className="flex flex-wrap gap-3 bg-white p-4 rounded shadow mb-4 relative group max-w-5xl mx-auto">
+                            <input type="text" placeholder="Container ID" value={container.container_id}
+                                onChange={(e) => handleContainerChange(idx, "container_id", e.target.value)}
+                                className="input w-36 border px-2 py-1 rounded text-sm" />
+                            <input type="text" placeholder="Zone" value={container.zone}
+                                onChange={(e) => handleContainerChange(idx, "zone", e.target.value)}
+                                className="input w-28 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Width" value={container.width}
+                                onChange={(e) => handleContainerChange(idx, "width", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Depth" value={container.depth}
+                                onChange={(e) => handleContainerChange(idx, "depth", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Height" value={container.height}
+                                onChange={(e) => handleContainerChange(idx, "height", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <button onClick={() => handleDeleteContainer(idx)}
+                                className="absolute top-2 right-2 hidden group-hover:inline-block bg-red-500 text-white px-2 py-1 text-sm rounded">
+                                Delete
+                            </button>
                         </div>
-
-                        {/* Delete button on hover */}
-                        <button
-                            onClick={() => handleDeleteItem(idx)}
-                            className="absolute top-2 right-2 hidden group-hover:inline-block bg-red-500 text-white text-sm px-2 py-1 rounded"
-                        >
-                            Delete
-                        </button>
-                    </div>
                     </div>
                 ))}
+                <div className="flex justify-center">
+                    <button onClick={handleAddContainer}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        Add Container
+                    </button>
+                </div>
+            </section>
+
+            {/* ITEMS SECTION */}
+            <section className="mb-10">
+                <h2 className="text-xl font-semibold mb-4 text-center">Item Details</h2>
+                {items.map((item, idx) => (
+                    <div key={idx} className="flex justify-center">
+                        <div className="flex flex-wrap gap-3 bg-white p-4 rounded shadow mb-4 relative group max-w-6xl mx-auto">
+                            <input type="text" placeholder="Item ID" value={item.item_id}
+                                onChange={(e) => handleItemChange(idx, "item_id", e.target.value)}
+                                className="input w-28 border px-2 py-1 rounded text-sm" />
+                            <input type="text" placeholder="Name" value={item.name}
+                                onChange={(e) => handleItemChange(idx, "name", e.target.value)}
+                                className="input w-36 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Width" value={item.width}
+                                onChange={(e) => handleItemChange(idx, "width", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Depth" value={item.depth}
+                                onChange={(e) => handleItemChange(idx, "depth", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Height" value={item.height}
+                                onChange={(e) => handleItemChange(idx, "height", parseFloat(e.target.value))}
+                                className="input w-20 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Mass" value={item.mass}
+                                onChange={(e) => handleItemChange(idx, "mass", parseFloat(e.target.value))}
+                                className="input w-24 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Priority" value={item.priority}
+                                onChange={(e) => handleItemChange(idx, "priority", parseInt(e.target.value))}
+                                className="input w-24 border px-2 py-1 rounded text-sm" />
+                            <input type="date" value={item.expiry_date?.split("T")[0] || ""}
+                                onChange={(e) => handleItemChange(idx, "expiry_date", `${e.target.value}T00:00:00`)}
+                                className="input w-40 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Usage Limit" value={item.usage_limit}
+                                onChange={(e) => handleItemChange(idx, "usage_limit", parseInt(e.target.value))}
+                                className="input w-28 border px-2 py-1 rounded text-sm" />
+                            <input type="number" placeholder="Usage Count" value={item.usage_count}
+                                onChange={(e) => handleItemChange(idx, "usage_count", parseInt(e.target.value))}
+                                className="input w-28 border px-2 py-1 rounded text-sm" />
+                            <input type="text" placeholder="Preferred Zone" value={item.preferred_zone}
+                                onChange={(e) => handleItemChange(idx, "preferred_zone", e.target.value)}
+                                className="input w-36 border px-2 py-1 rounded text-sm" />
+                            <button onClick={() => handleDeleteItem(idx)}
+                                className="absolute top-2 right-2 hidden group-hover:inline-block bg-red-500 text-white px-2 py-1 text-sm rounded">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
+                <div className="flex justify-center">
+                    <button onClick={handleAddItem}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                        Add Item
+                    </button>
+                </div>
+            </section>
+
+            {/* CONTAINER CSV UPLOAD AND PREVIEW */}
+            <section className="mb-10">
+                <h2 className="text-xl font-semibold mb-4 text-center">Upload Containers CSV</h2>
+                <div className="flex justify-center items-center gap-4 mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                        <FaUpload />
+                        Choose CSV File
+                        <input type="file" accept=".csv" onChange={handleContainersCSVUpload} className="hidden" />
+                    </label>
+                    {containerPreview.length > 0 && (
+                        <button
+                            onClick={() => setShowContainerPreview(!showContainerPreview)}
+                            className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                        >
+                            {showContainerPreview ? <FaEyeSlash /> : <FaEye />}
+                            {showContainerPreview ? "Hide Preview" : "Show Preview"}
+                        </button>
+                    )}
+                </div>
+                {containerFileName && (
+                    <p className="text-center text-sm text-gray-600 mb-2">Uploaded: {containerFileName}</p>
+                )}
+                {showContainerPreview && containerPreview.length > 0 && (
+                    <div className="max-w-5xl mx-auto bg-white p-4 rounded shadow max-h-96 overflow-y-auto">
+                        <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
+                            <FaFileCsv /> Containers Preview
+                        </h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-200 sticky top-0">
+                                        {Object.keys(containerPreview[0]).map((key) => (
+                                            <th key={key} className="border px-4 py-2 text-sm font-semibold">{key}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {containerPreview.map((row, idx) => (
+                                        <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
+                                            {Object.values(row).map((value, i) => (
+                                                <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            {/* ITEM CSV UPLOAD AND PREVIEW */}
+            <section className="mb-10">
+                <h2 className="text-xl font-semibold mb-4 text-center">Upload Items CSV</h2>
+                <div className="flex justify-center items-center gap-4 mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                        <FaUpload />
+                        Choose CSV File
+                        <input type="file" accept=".csv" onChange={handleItemsCSVUpload} className="hidden" />
+                    </label>
+                    {itemPreview.length > 0 && (
+                        <button
+                            onClick={() => setShowItemPreview(!showItemPreview)}
+                            className="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition"
+                        >
+                            {showItemPreview ? <FaEyeSlash /> : <FaEye />}
+                            {showItemPreview ? "Hide Preview" : "Show Preview"}
+                        </button>
+                    )}
+                </div>
+                {itemFileName && (
+                    <p className="text-center text-sm text-gray-600 mb-2">Uploaded: {itemFileName}</p>
+                )}
+                {showItemPreview && itemPreview.length > 0 && (
+                    <div className="max-w-6xl mx-auto bg-white p-4 rounded shadow max-h-96 overflow-y-auto">
+                        <h3 className="text-lg font-medium mb-2 flex items-center gap-2">
+                            <FaFileCsv /> Items Preview
+                        </h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-200 sticky top-0">
+                                        {Object.keys(itemPreview[0]).map((key) => (
+                                            <th key={key} className="border px-4 py-2 text-sm font-semibold">{key}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {itemPreview.map((row, idx) => (
+                                        <tr key={idx} className="even:bg-gray-50 hover:bg-gray-100">
+                                            {Object.values(row).map((value, i) => (
+                                                <td key={i} className="border px-4 py-2 text-sm">{value}</td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            {/* SUBMIT */}
+            <div className="text-center mb-10">
+                <button onClick={handleSubmit}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded text-lg">
+                    Submit for Placement
+                </button>
+                {status && <p className="mt-4 text-lg text-blue-700 font-medium">{status}</p>}
             </div>
 
-            {/* Actions */}
-            <div className="mt-6 flex justify-center gap-4">
-                <button
-                    onClick={handleAddItem}
-                    className="bg-white hover:bg-gray-300 text-black border-2 border-black px-4 py-2 rounded"
-                    >
-                    Add Another Item
-                </button>
-                <button
-                    onClick={handleSubmit}
-                    className="bg-white hover:bg-gray-300 text-black border-2 border-black px-4 py-2 rounded"
-                    >
-                    Submit
-                </button>
-            </div>
-
-            {/* Status message */}
-            {status && <p className="mt-4 text-blue-600 font-medium text-center">{status}</p>}
-
+            {/* PLACEMENTS RESULT */}
             {placements.length > 0 && (
-                <div className="mt-6 bg-white p-4 rounded shadow-md">
-                    <h2 className="text-lg font-semibold mb-4 text-center">Item Placements</h2>
-                    <ul className="space-y-3">
+                <>
+                <section className="bg-white p-6 rounded shadow">
+                    <h2 className="text-xl font-semibold mb-4 text-center">Item Placements</h2>
+                    <ul className="space-y-4">
                         {placements.map((placement, idx) => (
-                            <li key={idx} className="border border-gray-200 p-3 rounded">
+                            <li key={idx} className="border p-4 rounded">
                                 <p className="font-medium">{placement.name} (ID: {placement.item_id})</p>
                                 <p>Container ID: <span className="font-mono">{placement.container_id}</span></p>
                                 <p>Position:</p>
@@ -191,14 +444,18 @@ export default function Recommendation() {
                                     </li>
                                 </ul>
                                 {placement.is_waste && (
-                                    <p className="text-red-500 font-semibold mt-1">⚠️ Marked as waste: {placement.waste_reason || "No reason given"}</p>
+                                    <p className="text-red-500 font-semibold mt-1">
+                                        ⚠️ Marked as waste: {placement.waste_reason || "No reason given"}
+                                    </p>
                                 )}
                             </li>
                         ))}
                     </ul>
-                </div>
+                </section>
+                <ItemVisualizer3D items={placements} />
+                
+                </>
             )}
-
         </div>
     );
 }

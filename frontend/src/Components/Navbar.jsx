@@ -4,7 +4,7 @@ import { Home, Briefcase, Compass, FolderOpen, WashingMachine, Container } from 
 
 export default function FloatingNavbar() {
   return (
-    <div className="fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-full top-4 px-32 py-4 gap-10 flex space-x-4 border border-gray-300">
+    <div className="fixed left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-full top-4 px-32 py-4 gap-10 flex space-x-4 border border-gray-300 z-50">
       <NavItem to="/" icon={<Home size={24} />} label="Home" />
       <NavItem to="/placement" icon={<Briefcase size={24} />} label="Place Item" />
       <NavItem to="/recommendation" icon={<Compass size={24} />} label="Recommendation" />

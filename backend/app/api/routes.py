@@ -840,7 +840,8 @@ async def place_item(req: PlaceItemRequest):
     print("this is req", req)
 
     # Step 1: Fetch item
-    item = await db.items.find_one({"item_id": req.itemId})
+    item_id_normalized = str(int(req.itemId))  # converts '002' -> '2'
+    item = await db.items.find_one({"item_id": item_id_normalized})
     print(item)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found.")
