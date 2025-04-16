@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional,List
 from pydantic import BaseModel, Field
 from app.models.items import Position
 
@@ -15,3 +15,6 @@ class PlaceItemRequest(BaseModel):
     timestamp: datetime
     containerId: str
     position: Position
+
+class BatchPlaceItemRequest(BaseModel):
+    items: List[PlaceItemRequest]

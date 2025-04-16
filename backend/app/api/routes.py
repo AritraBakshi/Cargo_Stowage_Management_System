@@ -15,37 +15,10 @@ from app.models.items import Dimensions, Position, Item
 from datetime import datetime, timedelta
 from pymongo import UpdateOne  # Required import
 from fastapi import Query
-from app.models.requestsschema import PlaceItemRequest
+from app.models.requestsschema import PlaceItemRequest, BatchPlaceItemRequest
 from app.models.log import LogModel
 from app.models.requestsschema import wasteretunrreq
 from app.services.timesim import TimeSimulator
-
-#Time Simulation Part : 
-@router.post("/timesim")
-async def simulate_time(
-    request: dict = Body(...)
-):
-    try:
-        # Parse request
-        num_days = request.get("numOfDays")
-        to_timestamp = request.get("toTimestamp")
-        items_per_day = request.get("itemsToBeUsedPerDay", [])
-
-        # Load containers and items from DB 
-        containers = Container
-
-        sim = TimeSimulator(containers)
-        result = sim.simulate_time_progression(
-            num_days=num_days,
-            to_timestamp=to_timestamp,
-            items_to_use_daily=items_per_day
-        )
-
-        return result
-
-    except Exception as e:
-        return {"success": False, "error": str(e)}
-
 
 async def log_action(user_id: Optional[str], action_type: str, item_id: str, details: Dict[str, Optional[str]] = {}):
     log = LogModel(
@@ -60,6 +33,33 @@ async def log_action(user_id: Optional[str], action_type: str, item_id: str, det
 
 placement_service = PlacementService()
 router = APIRouter()
+
+#Time Simulation Part : 
+# @router.post("/timesim")
+# async def simulate_time(
+#     request: dict = Body(...)
+# ):
+#     try:
+#         # Parse request
+#         num_days = request.get("numOfDays")
+#         to_timestamp = request.get("toTimestamp")
+#         items_per_day = request.get("itemsToBeUsedPerDay", [])
+
+#         # Load containers and items from DB 
+#         containers = Container
+
+#         sim = TimeSimulator(containers)
+#         result = sim.simulate_time_progression(
+#             num_days=num_days,
+#             to_timestamp=to_timestamp,
+#             items_to_use_daily=items_per_day
+#         )
+
+#         return result
+
+#     except Exception as e:
+#         return {"success": False, "error": str(e)}
+
 
 # @router.post("/import/items")
 # async def add_items(file: UploadFile = File(...)):
@@ -837,8 +837,11 @@ async def identify_waste():
 
 @router.post("/place")
 async def place_item(req: PlaceItemRequest):
+    print("this is req", req)
+
     # Step 1: Fetch item
     item = await db.items.find_one({"item_id": req.itemId})
+    print(item)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found.")
 
@@ -1036,7 +1039,131 @@ async def returnplan(body: wasteretunrreq):
         "plan_valid": len(placed_items) == len(waste_items)
     }
 
+@router.post("/batch-place")
+async def batch_place_items(req: BatchPlaceItemRequest):
+    placed_items = []
+    errors = []
 
+    # Helper function to check overlaps
+    def is_overlap(pos1, pos2):
+        def overlaps_1d(a_start, a_end, b_start, b_end):
+            return not (a_end <= b_start or b_end <= a_start)
+
+        return (
+            overlaps_1d(pos1["start"]["width"], pos1["end"]["width"], pos2["start"]["width"], pos2["end"]["width"]) and
+            overlaps_1d(pos1["start"]["depth"], pos1["end"]["depth"], pos2["start"]["depth"], pos2["end"]["depth"]) and
+            overlaps_1d(pos1["start"]["height"], pos1["end"]["height"], pos2["start"]["height"], pos2["end"]["height"])
+        )
+
+    for item_req in req.items:
+        try:
+            # Step 1: Fetch item
+            item = await db.items.find_one({"item_id": item_req.itemId})
+            if not item:
+                raise HTTPException(status_code=404, detail=f"Item {item_req.itemId} not found.")
+
+            # Step 2: Fetch target container
+            container = await db.containers.find_one({"container_id": item_req.containerId})
+            if not container:
+                raise HTTPException(status_code=404, detail=f"Container {item_req.containerId} not found.")
+
+            # Step 3: Check for coordinate collisions
+            new_start = item_req.position.start_coordinates
+            new_end = item_req.position.end_coordinates
+            new_pos = {
+                "start": new_start.model_dump(),
+                "end": new_end.model_dump()
+            }
+
+            for existing_item in container.get("items", []):
+                if "position" not in existing_item:
+                    continue
+                existing_pos = {
+                    "start": existing_item["position"]["start_coordinates"],
+                    "end": existing_item["position"]["end_coordinates"]
+                }
+                if is_overlap(existing_pos, new_pos) and existing_item["item_id"] != item_req.itemId:
+                    raise HTTPException(status_code=400, detail=f"Coordinates already occupied for item {item_req.itemId}.")
+
+            # Step 4: Remove item from previous container if already placed
+            if item.get("container_id"):
+                await db.containers.update_one(
+                    {"container_id": item["container_id"]},
+                    {"$pull": {"items": {"item_id": item_req.itemId}}}
+                )
+
+            # Step 5: Update item document with new placement
+            await db.items.update_one(
+                {"item_id": item_req.itemId},
+                {
+                    "$set": {
+                        "container_id": item_req.containerId,
+                        "position": {
+                            "start_coordinates": new_start.model_dump(),
+                            "end_coordinates": new_end.model_dump()
+                        },
+                        "last_placed_by": item_req.userId,
+                        "last_placed_at": item_req.timestamp.isoformat()
+                    }
+                }
+            )
+
+            # Step 6: Push full item into the new container's item list
+            await db.containers.update_one(
+                {"container_id": item_req.containerId},
+                {
+                    "$push": {
+                        "items": {
+                            "item_id": item["item_id"],
+                            "name": item["name"],
+                            "dimensions": item["dimensions"],
+                            "mass": item["mass"],
+                            "priority": item["priority"],
+                            "expiry_date": item.get("expiry_date"),
+                            "usage_limit": item.get("usage_limit"),
+                            "usage_count": item.get("usage_count", 0),
+                            "preferred_zone": item["preferred_zone"],
+                            "container_id": item_req.containerId,
+                            "position": {
+                                "start_coordinates": new_start.model_dump(),
+                                "end_coordinates": new_end.model_dump()
+                            },
+                            "is_waste": item.get("is_waste", False),
+                            "waste_reason": item.get("waste_reason"),
+                            "placed_by": item_req.userId,
+                            "timestamp": item_req.timestamp.isoformat()
+                        }
+                    }
+                }
+            )
+
+            # Step 7: Log the placement
+            await log_action(
+                user_id=item_req.userId,
+                action_type="placement",
+                item_id=item_req.itemId,
+                details={
+                    "container_id": item_req.containerId,
+                    "position": {
+                        "start_coordinates": new_start.model_dump(),
+                        "end_coordinates": new_end.model_dump()
+                    }
+                }
+            )
+
+            placed_items.append(item_req.itemId)
+
+        except HTTPException as e:
+            errors.append({"item_id": item_req.itemId, "error": e.detail})
+
+    response = {
+        "success": len(errors) == 0,
+        "placed_items": placed_items,
+        "errors": errors,
+        "message": "Batch placement completed." if not errors else "Batch placement completed with errors."
+    }
+
+    return response
 
 
 @router.get("/logs", response_model=List[LogModel])

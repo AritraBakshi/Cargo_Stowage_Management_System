@@ -6,6 +6,7 @@ import Recommendation from './Components/Recomendation'
 import SearchRetrieve from './Components/SearchComp'
 import ContainerDetails from './Components/Containerdetails'
 import WasteManagement from './Components/Wastemanagement'
+import ItemPlacement from './Components/Placement'
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
         <Route path='/retrieve' element={<SearchRetrieve/>} />
         <Route path='/details' element={<ContainerDetails/>} />
         <Route path='/waste' element={<WasteManagement/>} />
+        <Route path='/placement' element={<ItemPlacement/>} />
       </Routes>
     </>
   )
