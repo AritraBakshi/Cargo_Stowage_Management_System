@@ -7,6 +7,7 @@ import SearchRetrieve from './Components/SearchComp'
 import ContainerDetails from './Components/Containerdetails'
 import WasteManagement from './Components/Wastemanagement'
 import ItemPlacementWithContainerDetails from './Components/Placement'
+import LogViewer from './Components/LogsComp'
 function App() {
   return (
     <>
@@ -19,6 +20,7 @@ function App() {
         <Route path='/details' element={<ContainerDetails/>} />
         <Route path='/waste' element={<WasteManagement/>} />
         <Route path='/placement' element={<ItemPlacementWithContainerDetails/>} />
+        <Route path='/logs' element={<LogViewer/>} />
       </Routes>
     </>
   )
