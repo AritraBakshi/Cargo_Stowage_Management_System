@@ -1,0 +1,16 @@
+Zone,Container ID,Width(cm),Depth(cm),Height(cm)
+Engineering,contA,200,85,200
+Engineering,contB,150,85,200
+Engineering,contC,100,85,200
+Laboratory,contD,100,85,200
+Crew Quarters,contE,100,85,200
+Medical Bay,contF,200,85,200
+Medical Bay,contG,150,85,200
+Laboratory,contH,100,85,200
+Crew Quarters,contI,50,85,200
+Cargo Hold,contJ,100,85,200
+Engineering,contK,100,85,200
+Medical Bay,contL,150,85,200
+Medical Bay,contM,50,85,200
+Laboratory,contN,150,85,200
+Medical Bay,contO,50,85,200

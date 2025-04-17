@@ -1,0 +1,8 @@
+PYTHONPATH=$PYTHONPATH:. python app/main.py
+
+
+"dimensions":\s*\{([\s\S]*?)\}\s*,?
+$1,
+
+
+$env:PYTHONPATH = "$env:PYTHONPATH;."; python app\main.py

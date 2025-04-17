@@ -1,0 +1,884 @@
+[
+    {
+        "item_id": "1",
+        "name": "Medical Supplies",
+        
+            "width": 7.0,
+            "depth": 19.0,
+            "height": 95.0
+        ,        "mass": 6.0,
+        "priority": 37,
+        "expiry_date": "2025-11-21T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "2",
+        "name": "First Aid Kit",
+        
+            "width": 43.0,
+            "depth": 8.0,
+            "height": 43.0
+        ,        "mass": 46.0,
+        "priority": 3,
+        "expiry_date": "2025-09-30T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "3",
+        "name": "Oxygen Cylinder",
+        
+            "width": 26.0,
+            "depth": 31.0,
+            "height": 73.0
+        ,        "mass": 44.0,
+        "priority": 53,
+        "expiry_date": "2027-04-30T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Crew Quarters",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "4",
+        "name": "First Aid Kit",
+        
+            "width": 36.0,
+            "depth": 39.0,
+            "height": 96.0
+        ,        "mass": 42.0,
+        "priority": 12,
+        "expiry_date": "2027-05-27T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "5",
+        "name": "Oxygen Cylinder",
+        
+            "width": 7.0,
+            "depth": 27.0,
+            "height": 70.0
+        ,        "mass": 25.0,
+        "priority": 66,
+        "expiry_date": "2027-11-25T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "6",
+        "name": "First Aid Kit",
+        
+            "width": 7.0,
+            "depth": 28.0,
+            "height": 73.0
+        ,        "mass": 37.0,
+        "priority": 45,
+        "expiry_date": "2027-03-27T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "7",
+        "name": "Food Packet",
+        
+            "width": 30.0,
+            "depth": 15.0,
+            "height": 45.0
+        ,        "mass": 44.0,
+        "priority": 58,
+        "expiry_date": "2026-05-12T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "8",
+        "name": "Medical Supplies",
+        
+            "width": 23.0,
+            "depth": 33.0,
+            "height": 77.0
+        ,        "mass": 12.0,
+        "priority": 40,
+        "expiry_date": "2026-03-02T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "9",
+        "name": "Water Container",
+        
+            "width": 49.0,
+            "depth": 43.0,
+            "height": 63.0
+        ,        "mass": 42.0,
+        "priority": 68,
+        "expiry_date": "2027-06-26T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "10",
+        "name": "Food Packet",
+        
+            "width": 26.0,
+            "depth": 27.0,
+            "height": 96.0
+        ,        "mass": 49.0,
+        "priority": 77,
+        "expiry_date": "2025-08-18T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "11",
+        "name": "Medical Supplies",
+        
+            "width": 10.0,
+            "depth": 7.0,
+            "height": 73.0
+        ,        "mass": 14.0,
+        "priority": 4,
+        "expiry_date": "2027-07-03T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "12",
+        "name": "Tool Kit",
+        
+            "width": 42.0,
+            "depth": 41.0,
+            "height": 85.0
+        ,        "mass": 36.0,
+        "priority": 31,
+        "expiry_date": "2027-11-20T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "13",
+        "name": "Oxygen Cylinder",
+        
+            "width": 22.0,
+            "depth": 27.0,
+            "height": 50.0
+        ,        "mass": 11.0,
+        "priority": 34,
+        "expiry_date": "2025-10-25T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "14",
+        "name": "Food Packet",
+        
+            "width": 9.0,
+            "depth": 28.0,
+            "height": 7.0
+        ,        "mass": 31.0,
+        "priority": 5,
+        "expiry_date": "2025-12-27T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "15",
+        "name": "Tool Kit",
+        
+            "width": 39.0,
+            "depth": 10.0,
+            "height": 71.0
+        ,        "mass": 18.0,
+        "priority": 18,
+        "expiry_date": "2027-03-21T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "16",
+        "name": "Battery Pack",
+        
+            "width": 43.0,
+            "depth": 32.0,
+            "height": 45.0
+        ,        "mass": 38.0,
+        "priority": 28,
+        "expiry_date": "2027-05-08T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "17",
+        "name": "Oxygen Cylinder",
+        
+            "width": 24.0,
+            "depth": 47.0,
+            "height": 23.0
+        ,        "mass": 47.0,
+        "priority": 58,
+        "expiry_date": "2026-08-14T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Crew Quarters",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "18",
+        "name": "Food Packet",
+        
+            "width": 24.0,
+            "depth": 36.0,
+            "height": 65.0
+        ,        "mass": 4.0,
+        "priority": 17,
+        "expiry_date": "2026-03-23T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "19",
+        "name": "Water Container",
+        
+            "width": 37.0,
+            "depth": 28.0,
+            "height": 60.0
+        ,        "mass": 2.0,
+        "priority": 23,
+        "expiry_date": "2026-01-16T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "20",
+        "name": "Medical Supplies",
+        
+            "width": 25.0,
+            "depth": 16.0,
+            "height": 64.0
+        ,        "mass": 41.0,
+        "priority": 73,
+        "expiry_date": "2025-12-11T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "21",
+        "name": "Medical Supplies",
+        
+            "width": 23.0,
+            "depth": 23.0,
+            "height": 29.0
+        ,        "mass": 44.0,
+        "priority": 99,
+        "expiry_date": "2025-04-17T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Crew Quarters",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "22",
+        "name": "Oxygen Cylinder",
+        
+            "width": 8.0,
+            "depth": 26.0,
+            "height": 52.0
+        ,        "mass": 6.0,
+        "priority": 68,
+        "expiry_date": "2026-03-21T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "23",
+        "name": "Medical Supplies",
+        
+            "width": 27.0,
+            "depth": 45.0,
+            "height": 57.0
+        ,        "mass": 33.0,
+        "priority": 66,
+        "expiry_date": "2026-06-13T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "24",
+        "name": "Food Packet",
+        
+            "width": 7.0,
+            "depth": 19.0,
+            "height": 58.0
+        ,        "mass": 18.0,
+        "priority": 10,
+        "expiry_date": "2026-09-22T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "25",
+        "name": "Oxygen Cylinder",
+        
+            "width": 18.0,
+            "depth": 21.0,
+            "height": 46.0
+        ,        "mass": 28.0,
+        "priority": 1,
+        "expiry_date": "2027-08-22T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "26",
+        "name": "Oxygen Cylinder",
+        
+            "width": 24.0,
+            "depth": 28.0,
+            "height": 46.0
+        ,        "mass": 21.0,
+        "priority": 29,
+        "expiry_date": "2027-09-13T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "27",
+        "name": "Battery Pack",
+        
+            "width": 11.0,
+            "depth": 29.0,
+            "height": 42.0
+        ,        "mass": 3.0,
+        "priority": 7,
+        "expiry_date": "2027-05-14T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "28",
+        "name": "Food Packet",
+        
+            "width": 36.0,
+            "depth": 46.0,
+            "height": 6.0
+        ,        "mass": 21.0,
+        "priority": 20,
+        "expiry_date": "2026-01-23T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "29",
+        "name": "Tool Kit",
+        
+            "width": 44.0,
+            "depth": 14.0,
+            "height": 32.0
+        ,        "mass": 44.0,
+        "priority": 69,
+        "expiry_date": "2026-02-19T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "30",
+        "name": "Tool Kit",
+        
+            "width": 22.0,
+            "depth": 37.0,
+            "height": 94.0
+        ,        "mass": 41.0,
+        "priority": 22,
+        "expiry_date": "2027-08-26T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "31",
+        "name": "Oxygen Cylinder",
+        
+            "width": 23.0,
+            "depth": 15.0,
+            "height": 66.0
+        ,        "mass": 39.0,
+        "priority": 99,
+        "expiry_date": "2025-09-06T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "32",
+        "name": "Food Packet",
+        
+            "width": 27.0,
+            "depth": 6.0,
+            "height": 67.0
+        ,        "mass": 1.0,
+        "priority": 96,
+        "expiry_date": "2026-02-13T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "33",
+        "name": "Medical Supplies",
+        
+            "width": 30.0,
+            "depth": 6.0,
+            "height": 42.0
+        ,        "mass": 22.0,
+        "priority": 89,
+        "expiry_date": "2025-10-07T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "34",
+        "name": "First Aid Kit",
+        
+            "width": 35.0,
+            "depth": 9.0,
+            "height": 90.0
+        ,        "mass": 47.0,
+        "priority": 74,
+        "expiry_date": "2027-02-20T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "35",
+        "name": "Battery Pack",
+        
+            "width": 11.0,
+            "depth": 20.0,
+            "height": 58.0
+        ,        "mass": 17.0,
+        "priority": 75,
+        "expiry_date": "2026-01-19T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "36",
+        "name": "First Aid Kit",
+        
+            "width": 42.0,
+            "depth": 31.0,
+            "height": 67.0
+        ,        "mass": 18.0,
+        "priority": 89,
+        "expiry_date": "2026-05-14T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "37",
+        "name": "Water Container",
+        
+            "width": 29.0,
+            "depth": 9.0,
+            "height": 83.0
+        ,        "mass": 13.0,
+        "priority": 35,
+        "expiry_date": "2027-10-03T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "38",
+        "name": "Oxygen Cylinder",
+        
+            "width": 47.0,
+            "depth": 18.0,
+            "height": 9.0
+        ,        "mass": 19.0,
+        "priority": 44,
+        "expiry_date": "2025-04-18T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "39",
+        "name": "Medical Supplies",
+        
+            "width": 40.0,
+            "depth": 26.0,
+            "height": 54.0
+        ,        "mass": 8.0,
+        "priority": 1,
+        "expiry_date": "2025-12-16T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "40",
+        "name": "Medical Supplies",
+        
+            "width": 43.0,
+            "depth": 15.0,
+            "height": 92.0
+        ,        "mass": 42.0,
+        "priority": 78,
+        "expiry_date": "2026-02-28T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "41",
+        "name": "Medical Supplies",
+        
+            "width": 23.0,
+            "depth": 33.0,
+            "height": 53.0
+        ,        "mass": 50.0,
+        "priority": 35,
+        "expiry_date": "2027-04-16T00:00:00",
+        "usage_limit": 10,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "42",
+        "name": "Food Packet",
+        
+            "width": 35.0,
+            "depth": 39.0,
+            "height": 33.0
+        ,        "mass": 12.0,
+        "priority": 47,
+        "expiry_date": "2025-08-20T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Command Center",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "43",
+        "name": "Oxygen Cylinder",
+        
+            "width": 37.0,
+            "depth": 17.0,
+            "height": 39.0
+        ,        "mass": 18.0,
+        "priority": 96,
+        "expiry_date": "2025-08-12T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Medical Bay",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "44",
+        "name": "Food Packet",
+        
+            "width": 17.0,
+            "depth": 6.0,
+            "height": 100.0
+        ,        "mass": 3.0,
+        "priority": 58,
+        "expiry_date": "2025-04-29T00:00:00",
+        "usage_limit": 100,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "45",
+        "name": "Water Container",
+        
+            "width": 15.0,
+            "depth": 44.0,
+            "height": 47.0
+        ,        "mass": 7.0,
+        "priority": 94,
+        "expiry_date": "2026-06-26T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "46",
+        "name": "Battery Pack",
+        
+            "width": 24.0,
+            "depth": 40.0,
+            "height": 100.0
+        ,        "mass": 42.0,
+        "priority": 24,
+        "expiry_date": "2025-08-12T00:00:00",
+        "usage_limit": 50,
+        "usage_count": 0,
+        "preferred_zone": "Airlock",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "47",
+        "name": "Food Packet",
+        
+            "width": 27.0,
+            "depth": 19.0,
+            "height": 20.0
+        ,        "mass": 48.0,
+        "priority": 54,
+        "expiry_date": "2026-03-25T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Crew Quarters",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "48",
+        "name": "Tool Kit",
+        
+            "width": 40.0,
+            "depth": 28.0,
+            "height": 43.0
+        ,        "mass": 5.0,
+        "priority": 91,
+        "expiry_date": "2026-01-19T00:00:00",
+        "usage_limit": 30,
+        "usage_count": 0,
+        "preferred_zone": "Engineering",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    },
+    {
+        "item_id": "49",
+        "name": "First Aid Kit",
+        
+            "width": 17.0,
+            "depth": 11.0,
+            "height": 80.0
+        ,        "mass": 5.0,
+        "priority": 66,
+        "expiry_date": "2026-04-01T00:00:00",
+        "usage_limit": 5,
+        "usage_count": 0,
+        "preferred_zone": "Cargo Hold",
+        "container_id": null,
+        "position": null,
+        "is_waste": false,
+        "waste_reason": null
+    }
+]

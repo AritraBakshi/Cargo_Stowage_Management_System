@@ -1,0 +1,7 @@
+itemId,userId,timestamp,containerId,start_width,start_depth,start_height,end_width,end_depth,end_height
+002,user123,2025-04-16T12:01:00Z,contA,14,31,0,19,58,22
+003,user123,2025-04-16T12:02:00Z,contB,0,0,0,19,45,73
+004,user123,2025-04-16T12:03:00Z,contC,0,0,0,40,26,7
+005,user123,2025-04-16T12:04:00Z,contC,40,0,0,60,30,68
+006,user123,2025-04-16T12:05:00Z,contD,0,0,0,48,17,41
+007,user123,2025-04-16T12:06:00Z,contE,0,0,0,14,38,90
