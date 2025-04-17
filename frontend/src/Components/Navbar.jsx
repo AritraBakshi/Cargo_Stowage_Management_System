@@ -10,7 +10,7 @@ export default function FloatingNavbar() {
       <NavItem to="/recommendation" icon={<Compass size={24} />} label="Recommendation" />
       <NavItem to="/retrieve" icon={<FolderOpen size={24} />} label="Search & Retrieve" />
       <NavItem to={"/waste"} icon={<WashingMachine size={24} />} label="Waste" />
-      <NavItem to="/logs" icon={<Container size={24} />} label="Logs" />
+      <NavItem to="/details" icon={<Container size={24} />} label="Container Details" />
     </div>
   );
 }

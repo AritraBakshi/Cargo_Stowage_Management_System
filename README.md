@@ -1,17 +1,27 @@
 # Space Station Cargo Management System
 
-This  implementation of the Space Station Cargo Management System API for the hackathon. It has been implemented in Python and webapp is implemented in ReactJS 
+This implementation of the Space Station Cargo Management System API for the hackathon. It has been implemented in Python and webapp is implemented in ReactJS 
 
 ## Getting Started
 
 1. Clone this repository
 2. Build the Docker container: `docker build -t cargo-management .`
-3. Run the container: `docker run -p 8000:8000 cargo-management`
-4. Test the API at http://localhost:8000
+3. Run the container: `docker run -p 80:80 cargo-management`
+4. Access the web app at http://localhost:80 and the API at http://localhost:80/api
 
 ### Folder Structure:
 Backend folder is the api folder and frontend folder is the ui for the webapp
-### Running the frontend
+
+### Running locally for development
+#### Backend
+```
+cd backend
+pip install -r requirements.txt
+python app/main.py
+```
+Backend API will be available on `http://localhost:8000/`
+
+#### Frontend
 ```
 cd frontend
 npm i
@@ -122,6 +132,36 @@ This will fetch the item
   "plan_valid": <Bool>
 }
 ```
+## Performance Optimizations Implemented
+
+The system has been optimized with the following improvements:
+
+### 1. Placement Service & Bin Packing
+- **Corner Point Placement:** Instead of checking every cm³, we only check "corner points" where items can be validly placed, reducing candidate positions from thousands to dozens.
+- **Reduced Rotation Options:** Only checking the most sensible 2 rotations instead of all 6 possible rotations.
+- **Skyline Algorithm:** Maintains a "skyline" of current top surfaces, only checking positions along the skyline.
+- **Time Complexity:** Improved from O(n log n + n * V * m) to O(n log n + n * C * m) where C is significantly smaller than V.
+
+### 2. Retrieval Service
+- **Path Planning:** Optimized retrieval with a directed path planning approach.
+- **Dependency-based Extraction:** Only move items directly blocking extraction path.
+- **Prioritized Removal:** Items removed based on distance and priority for minimal disruption.
+- **Time Complexity:** Improved from O(n * m + b²) to O(n * m + b log b).
+
+### 3. Waste Management Service
+- **Priority Queues:** Implemented priority queues for fast identification of expiring/overused items.
+- **Incremental Updates:** Efficiently update tracking when items are modified.
+- **Time Complexity:** Improved from O(n * m) to O(log n) for most operations.
+
+### 4. Return Service
+- **Greedy Knapsack Approach:** Sort waste items by mass-to-volume ratio and optimally fill containers.
+- **Efficient Packing:** Uses the optimized bin packer for container space utilization.
+- **Time Complexity:** Improved from O(n * m²) to O(n log n + n * m).
+
+### 5. Overall System
+- **Optimized Docker Configuration:** Single container solution that runs both frontend and backend.
+- **Efficient Data Structures:** Optimized lookups and reduced redundant calculations.
+
 ## Features Implemented
 
 Our solution implements all the APIs described in the problem statement:
@@ -137,13 +177,13 @@ Our solution implements all the APIs described in the problem statement:
 
 ## Time Complexity Summary of Core Algorithms
 
-| Service / Module        | Time Complexity              | Worst Case Scenario Description                          |
-|-------------------------|------------------------------|----------------------------------------------------------|
-| **Placement**           | `O(n log n + n * V * m)`     | Sorting containers + Brute-force bin-packing per item    |
-| **Bin Packing**         | `O(V * m)`                   | Tries all positions (1cm granularity) × overlap checks   |
-| **Retrieval**           | `O(n * m + b²)`              | Linear search + rearranging `b` blocking items           |
-| **Waste Management**    | `O(n * m)`                   | Scan each item in every container for expiry/overuse     |
-| **Return (Waste Move)** | `O(n * m²)`                  | Partition + re-packing each container (naive)            |
+| Service / Module        | Original Complexity       | Optimized Complexity          | Worst Case Scenario Description                          |
+|-------------------------|---------------------------|-------------------------------|----------------------------------------------------------|
+| **Placement**           | `O(n log n + n * V * m)`  | `O(n log n + n * C * m)`      | Sorting containers + Corner points bin-packing per item   |
+| **Bin Packing**         | `O(V * m)`                | `O(C * m)`                    | Tries corner points × overlap checks (C << V)            |
+| **Retrieval**           | `O(n * m + b²)`           | `O(n * m + b log b)`          | Linear search + optimized extraction of `b` blocking items|
+| **Waste Management**    | `O(n * m)`                | `O(log n)` for most ops       | Priority queue operations for expiring/overused items     |
+| **Return (Waste Move)** | `O(n * m²)`               | `O(n log n + n * m)`          | Greedy knapsack + optimized bin packing                   |
 
 ---
 
@@ -151,8 +191,8 @@ Our solution implements all the APIs described in the problem statement:
 
 - `n` = Number of containers  
 - `m` = Maximum number of items per container  
-- `V` = Number of candidate positions per container  
--  Approximated by grid resolution: `(W - w + 1)(D - d + 1)(H - h + 1)`  
+- `V` = Number of candidate positions per container (brute force approach)  
+- `C` = Number of corner points (optimized approach, C << V)
 - `b` = Number of blocking items (during retrieval)
 
 ---
